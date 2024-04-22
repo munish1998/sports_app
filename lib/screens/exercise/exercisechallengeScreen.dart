@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/providers/challengesProvider.dart';
-import 'package:touchmaster/screens/exercise/exercisechallengeScreen.dart';
 
 import '../../utils/constant.dart';
 import '/app_image.dart';
@@ -19,16 +18,19 @@ import '/utils/commonMethod.dart';
 import '/utils/size_extension.dart';
 import 'exercisePlayerScreen.dart';
 
-class ExercisesScreen1 extends StatefulWidget {
-  final LevelModel? levelItem;
+class ExercisesScreen extends StatefulWidget {
+  final LevelModel levelItem;
 
-  const ExercisesScreen1({super.key, this.levelItem});
+  const ExercisesScreen({
+    super.key,
+    required this.levelItem,
+  });
 
   @override
-  State<ExercisesScreen1> createState() => _ExercisesScreen1State();
+  State<ExercisesScreen> createState() => _ExercisesScreenState();
 }
 
-class _ExercisesScreen1State extends State<ExercisesScreen1> {
+class _ExercisesScreenState extends State<ExercisesScreen> {
   SharedPreferences? pref;
 
   @override
@@ -58,7 +60,7 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
           ),
         ),
         title: Text(
-          widget.levelItem!.title,
+          widget.levelItem.title,
           style: TextStyle(
               letterSpacing: 2,
               fontFamily: "BankGothic",
@@ -90,7 +92,7 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(21),
                         child: cacheLevelBG(
-                            image: widget.levelItem!.bgImage,
+                            image: widget.levelItem.bgImage,
                             radius: 15,
                             height: 250,
                             width: double.infinity),
@@ -142,7 +144,7 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
                               width: 10,
                             ),
                             Text(
-                              '${widget.levelItem!.duration} ',
+                              widget.levelItem.duration,
                               style: GoogleFonts.poppins(
                                 color: Colors.white,
                                 fontSize: 15,
@@ -160,15 +162,89 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
                   child: Column(
                     children: [
                       Text(
-                        'LEVEL ${widget.levelItem!.exercises}',
+                        widget.levelItem.description,
+                        style:
+                            GoogleFonts.lato(color: Colors.white, fontSize: 13),
+                      ),
+                      Text(
+                        "The lower abdomen and hips are the most difficult areas of the body to reduce when we are on a diet. Even so, in this area, especially the legs as a whole, you can reduce weight even if you don't use tools.",
                         style: GoogleFonts.lato(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
+                            color: const Color(0xffFFFFFF).withOpacity(0.5),
+                            fontSize: 13),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          var pro = Provider.of<UsersProvider>(context,
+                              listen: false);
+                          if (pro.usersFollowList.isNotEmpty) {
+                            challengeDialog(
+                                context: context,
+                                exerciseId: widget.levelItem.id);
+                          } else {
+                            commonAlert(
+                                context, 'You have no any connection yet');
+                          }
+                        },
+                        child: Container(
+                          width: 314,
+                          height: 50,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  tileMode: TileMode.clamp,
+                                  colors: [
+                                    Color(0xff02B660),
+                                    Color(0xff51CDE2),
+                                  ])),
+                          child: Center(
+                              child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                ' Challenge a player',
+                                style: GoogleFonts.mulish(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          )),
                         ),
                       ),
                       SizedBox(
                         height: 20,
+                      ),
+                      Container(
+                        width: 214,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                tileMode: TileMode.clamp,
+                                colors: [
+                                  Color(0xff02B660),
+                                  Color(0xff51CDE2),
+                                ])),
+                        child: Center(
+                            child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              ' Watch video',
+                              style: GoogleFonts.mulish(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        )),
                       ),
                       ListView.separated(
                         physics: NeverScrollableScrollPhysics(),
@@ -176,9 +252,7 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
                         itemCount: data.exerciseList.length,
                         itemBuilder: (context, index) {
                           var item = data.exerciseList[index];
-                          return exerciseItem(
-                            item,
-                          );
+                          return Container();
                         },
                         separatorBuilder: (context, index) {
                           return SizedBox(
@@ -197,31 +271,9 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
     );
   }
 
-  Widget exerciseItem(
-    ExerciseModel item,
-  ) =>
-      Container(
+  Widget exerciseItem(ExerciseModel item) => Container(
         child: InkWell(
-          onTap: () async {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ExercisesScreen1(
-                          levelItem: widget.levelItem!,
-                        )));
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (context) => ExercisesScreen1(
-            //               levelItem: item1,
-            //             )));
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => ExerciseContentScreen(exercise: item),
-            //   ),
-            // );
-          },
+          onTap: () async {},
           child: Container(
             padding: EdgeInsets.symmetric(
               vertical: 10,
@@ -251,6 +303,14 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
+                    Text(
+                      item.duration,
+                      style: GoogleFonts.lato(
+                        color: white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     // Text(
                     //   "30:00",
                     //   style: GoogleFonts.lato(
@@ -273,7 +333,7 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
                     }
                   },
                   icon: Icon(
-                    Icons.people_outline,
+                    Icons.video_call,
                     color: primary,
                   ),
                 ),
@@ -284,106 +344,6 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
       );
 
   void challengeDialog(
-      {required BuildContext context, required String exerciseId}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(builder: (context, setState) {
-          return Consumer<UsersProvider>(builder: (context, data, child) {
-            return Container(
-              height: 250,
-              margin: EdgeInsets.symmetric(horizontal: 20) +
-                  EdgeInsets.only(top: 300, bottom: 100),
-              decoration: BoxDecoration(
-                color: Color(0xff323232),
-                borderRadius: BorderRadius.circular(19),
-              ),
-              child: Scaffold(
-                backgroundColor: Colors.transparent,
-                body: Stack(
-                  children: [
-                    // bottom image
-                    ListView.separated(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      padding: EdgeInsets.all(16),
-                      itemCount: data.usersFollowList.length,
-                      itemBuilder: (context, index) {
-                        var item = data.usersFollowList[index];
-                        return Container(
-                          child: Row(
-                            children: [
-                              cacheImages(
-                                image: item.profilePicture,
-                                radius: 50,
-                                height: 45,
-                                width: 45,
-                              ),
-                              SizedBox(width: 30),
-                              Text(
-                                item.name,
-                                style: GoogleFonts.poppins(
-                                  color: white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Spacer(),
-                              InkWell(
-                                onTap: () {
-                                  onChallenge(
-                                      challengeId: item.userId,
-                                      exerciseId: exerciseId);
-                                  // Update button color to pink after challenge is sent
-                                  data.updateChallengeButtonColor(
-                                      item.userId, Colors.pink);
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 10),
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      tileMode: TileMode.clamp,
-                                      colors: [
-                                        Color(0xff02B660),
-                                        Color(0xff51CDE2),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(6),
-                                    color:
-                                        data.challengeButtonColors[item.userId],
-                                  ),
-                                  child: Text(
-                                    "Challenge",
-                                    style: GoogleFonts.mulish(
-                                      color: white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return SizedBox(height: 15, child: Divider());
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            );
-          });
-        });
-      },
-    );
-  }
-
-  void challengeDialog1(
       {required BuildContext context, required String exerciseId}) {
     showDialog(
         context: context,
@@ -498,8 +458,6 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
         navPop(context: context);
       }
       commonAlert(context, pro.msg);
-      log('chalengeresponsestatus=====>>>>>>>>>>>>>>>>>>>>>>>>${data}');
-      log('challengeresponselist=======>>>>>>${pro.challengeList}');
       log('ChaleengeData --------${pro.msg}    ${pro.isChallenged}');
     });
   }

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/model/usersModel.dart';
+import 'package:touchmaster/screens/account/profile1.dart';
 import 'package:touchmaster/utils/commonMethod.dart';
 
 import '../../app_image.dart';

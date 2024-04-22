@@ -35,6 +35,14 @@ class UsersProvider with ChangeNotifier {
 
   bool get isProfile => _isProfile;
 
+  Map<String, Color> challengeButtonColors = {};
+
+  // Method to update the color of the challenge button for a user
+  void updateChallengeButtonColor(String userId, Color color) {
+    challengeButtonColors[userId] = color;
+    notifyListeners();
+  }
+
   Future<void> removeUser(UsersModel item, int type) async {
     if (type == 0) {
       _usersFollowList.remove(item);

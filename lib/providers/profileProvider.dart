@@ -453,12 +453,14 @@ class ProfileProvider with ChangeNotifier {
       {required BuildContext context, required Map data}) async {
     var url = Uri.parse(Apis.getPersonalizeCard);
     // debugPrint('Data-==>  $url');
+    // log('getpersonalizedCard data====>>>>>$url');
+    // log('personalizedcard data =====>>>>$data');
     debugPrint('Data-==>  $data');
     _personalizeCards.clear();
     // showLoaderDialog(context, 'Please wait...');
     final response = await ApiClient()
         .postDataByToken(context: context, url: url, body: data);
-    log('Response--Card------->>>  ${response.body}');
+    // log('Response--Card------->>>  ${response.body}');
     var result = jsonDecode(response.body);
     // navPop(context: context);
     if (response.statusCode == 200) {

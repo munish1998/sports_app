@@ -66,7 +66,7 @@ class ChallengeProvider with ChangeNotifier {
     showLoaderDialog(context, 'Please wait...');
     final response = await ApiClient()
         .postDataByToken(context: context, url: url, body: data);
-    log('Response--------->>>  ${response.body}');
+    // log('Response--------->>>  ${response.body}');
     var result = jsonDecode(response.body);
     navPop(context: context);
     if (response.statusCode == 200) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:touchmaster/screens/account/profile1.dart';
 
 import '/app_image.dart';
 import '/screens/account/profile.dart';

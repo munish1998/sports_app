@@ -49,30 +49,6 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     pro.getChallenges(context: context, data: data);
   }
 
-  Future<bool> initializePlayer(String video) async {
-    try {
-      showLoaderDialog(context, 'Loading...');
-      _vController = VideoPlayerController.networkUrl(Uri.parse(video));
-      await Future.wait([_vController!.initialize()]);
-      _chewController = ChewieController(
-        videoPlayerController: _vController!,
-        autoPlay: false,
-        showControls: false,
-        looping: false,
-      );
-      return _vController!.value.isInitialized;
-    } catch (e) {
-      log('initialization error occur======>>>>>>>$e');
-    }
-    log('initialization occur======>>>>>$_vController');
-    log('initialization occur occur ======>>>>>>$_chewController');
-    log('intialization video response=====>>>>>$video');
-
-    setState(() {});
-    navPop(context: context);
-    return _vController!.value.isInitialized;
-  }
-
   Future<bool> initializePlayer1(String video) async {
     try {
       showLoaderDialog(context, 'Loading...');
@@ -84,13 +60,56 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
         showControls: false,
         looping: false,
       );
-      log('error occur of initialization======>>>>>>>$_vController');
-      log('video initialization successfull========>>>>>>>>>$_chewController');
       return _vController!.value.isInitialized;
     } catch (e) {
-      log('error initialize player=======>>>>>>>>>>>>:$e');
-      log('video url of initialization====>>>>>>$video');
-      log('_vcontroller response=====>>>>>>>$_vController');
+      log('response of _chewcontroller======>>>>>$_chewController');
+      log('response of _vcontroller=====>>>>>$_vController');
+      log('video reponse====>>>>>$video');
+      log('initialization error occur======>>>>>>>$e');
+    }
+    // log('initialization occur======>>>>>$_vController');
+    // log('initialization occur occur ======>>>>>>$_chewController');
+    // log('intialization video response=====>>>>>$video');
+
+    setState(() {});
+    navPop(context: context);
+    return _vController!.value.isInitialized;
+  }
+
+  Future<bool> initializePlayer(String video) async {
+    showLoaderDialog(context, 'Loading...');
+    _vController = VideoPlayerController.networkUrl(Uri.parse(video));
+    await Future.wait([_vController!.initialize()]);
+    _chewController = ChewieController(
+      videoPlayerController: _vController!,
+      autoPlay: false,
+      showControls: false,
+      looping: false,
+    );
+    log('initialization video response=====>>>>>$_vController');
+    setState(() {});
+    navPop(context: context);
+    return _vController!.value.isInitialized;
+  }
+
+  Future<bool> initializePlayer2(String video) async {
+    try {
+      showLoaderDialog(context, 'Loading...');
+      _vController = VideoPlayerController.networkUrl(Uri.parse(video));
+      await Future.wait([_vController!.initialize()]);
+      _chewController = ChewieController(
+        videoPlayerController: _vController!,
+        autoPlay: false,
+        showControls: false,
+        looping: false,
+      );
+      // log('error occur of initialization======>>>>>>>$_vController');
+      // log('video initialization successfull========>>>>>>>>>$_chewController');
+      return _vController!.value.isInitialized;
+    } catch (e) {
+      // log('error initialize player=======>>>>>>>>>>>>:$e');
+      // log('video url of initialization====>>>>>>$video');
+      // log('_vcontroller response=====>>>>>>>$_vController');
       return false;
     }
   }
@@ -167,7 +186,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
             AppImage(
               (item.status == 'pending')
                   ? 'assets/target.png'
-                  : (item.status == 'approved')
+                  : (item.status == 'approve')
                       ? 'assets/approved.png'
                       : 'assets/declined.png',
               height: 75,
@@ -184,7 +203,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   Row(
                     children: [
                       Text(
-                        'chllenge send by',
+                        'challenge send by',
                         style: TextStyle(color: Colors.white),
                       ),
                       SizedBox(
@@ -225,7 +244,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                               item.id!,
                               item.thumbnail!,
                             )
-                          : (item.status == 'approve')
+                          : (item.status == 'attempt')
                               ? approvedBTN()
                               : (item.status == 'decline')
                                   ? reAttendBTN(
@@ -373,7 +392,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
           children: [
             InkWell(
               onTap: () {
-                // approveAlert(context: context);
+                approveAlert(context: context);
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),

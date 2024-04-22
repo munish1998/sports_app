@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,7 @@ class PracticeProvider with ChangeNotifier {
 
   List<PracticeModel> get practiceList => _practiceList;
 
-  List<String> practice = ['Endurance', 'Speed & Agility', 'Technical'];
+  // List<String> practice = ['Endurance', 'Speed & Agility', 'Technical'];
 
   reset() async {
     _cateIndex = 0;
@@ -31,10 +32,25 @@ class PracticeProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Map<int, List<PracticeModel>> _categoryPracticeMap = {};
+
+  // Method to set practice lists for each category
+  void setCategoryPracticeMap(
+      Map<int, List<PracticeModel>> categoryPracticeMap) {
+    _categoryPracticeMap = categoryPracticeMap;
+    notifyListeners();
+  }
+
+  // Method to get practice list for the selected category index
+  List<PracticeModel> getPracticeListForCategory(int categoryIndex) {
+    // Return the practice list for the selected category index
+    return _categoryPracticeMap[categoryIndex] ?? [];
+  }
+
   Future<void> getPracticeCategory(
       {required BuildContext context, required Map data}) async {
     var url = Uri.parse(Apis.practiceCategory);
-    // debugPrint('Data-==>  $url');
+    debugPrint('Data-==>  $url');
     // showLoaderDialog(context, 'Please wait...');
     final response = await ApiClient()
         .postDataByToken(context: context, url: url, body: data);
@@ -68,7 +84,7 @@ class PracticeProvider with ChangeNotifier {
     // showLoaderDialog(context, 'Please wait...');
     final response = await ApiClient()
         .postDataByToken(context: context, url: url, body: data);
-    // log('Response--------->>>  ${response.body}');
+    // log('Response of get practice--------->>>  ${response.body}');
     var result = jsonDecode(response.body);
     // navPop(context: context);
     if (response.statusCode == 200) {

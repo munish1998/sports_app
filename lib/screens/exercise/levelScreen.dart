@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:touchmaster/screens/exercise/exercisechallengeScreen.dart';
 
 import '../../app_image.dart';
 import '../../model/levelModel.dart';
@@ -240,7 +241,8 @@ class _LevelScreenState extends State<LevelScreen> {
             pro.getExercises(context: context, data: data).then((value) {
               if (pro.isExercise) {
                 navPush(
-                    context: context, action: ExercisesScreen(levelItem: item));
+                    context: context,
+                    action: ExercisesScreen1 (levelItem: item));
               }
             });
           },
@@ -265,7 +267,7 @@ class _LevelScreenState extends State<LevelScreen> {
                       backgroundBlendMode: BlendMode.srcOver),
                   alignment: Alignment.center,
                   child: Text(
-                    item.description,
+                    item.title,
                     style: TextStyle(
                         letterSpacing: 2,
                         fontFamily: "BankGothic",

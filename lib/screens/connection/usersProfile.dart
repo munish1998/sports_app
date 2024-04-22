@@ -84,6 +84,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen>
     var pro = Provider.of<ProfileProvider>(context, listen: false);
     pro.getPersonalizeCard(context: context, data: dataCard);
     pro.setFalse();
+    log('getdataresponse=====    >>>>$dataCard');
   }
 
   @override

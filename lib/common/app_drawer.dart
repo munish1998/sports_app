@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:touchmaster/screens/account/profile1.dart';
 
 import '../app_image.dart';
 import '../providers/authProvider.dart';

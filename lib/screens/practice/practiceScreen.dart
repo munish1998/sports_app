@@ -105,7 +105,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               ),
               Center(
                 child: Text(
-                  "Challenges",
+                  "Learn and Practice",
                   style: TextStyle(
                       letterSpacing: 2,
                       fontFamily: "BankGothic",

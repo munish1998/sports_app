@@ -9,8 +9,8 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:touchmaster/model/personalizeModel.dart';
 
-import '../../model/personalizeModel.dart';
 import '../../providers/profileProvider.dart';
 import '../../utils/color.dart';
 import '../../utils/customLoader.dart';
@@ -32,10 +32,10 @@ class ProfileScreen extends StatefulWidget {
   });
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => _ProfileScreen1State();
 }
 
-class _ProfileScreenState extends State<ProfileScreen>
+class _ProfileScreen1State extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -61,9 +61,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   getProfile() async {
     var data = {'user_id': pref!.getString(userIdKey).toString() ?? ''};
     log('UserFound---------->>>> $data');
-    var pro = Provider.of<ProfileProvider>(context, listen: false);
-    await pro.getProfile(context: context, data: data);
-    getCard();
+    await Provider.of<ProfileProvider>(context, listen: false)
+        .getProfile(context: context, data: data);
   }
 
   getCard() async {
@@ -114,6 +113,272 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
+  Widget get cardSection =>
+      Consumer<ProfileProvider>(builder: (context, data, child) {
+        // var item = data.personalizeCards.length;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            (data.personalizeCards.isEmpty)
+                ? CircularProgressIndicator()
+                : Column(
+                    children: [
+                      Center(
+                        child: Container(
+                          height: 365,
+                          width: MediaQuery.sizeOf(context).width,
+                          alignment: Alignment.center,
+                          child: Center(
+                            child: CardSwiper(
+                                padding: EdgeInsets.zero,
+                                direction: CardSwiperDirection.right,
+                                numberOfCardsDisplayed:
+                                    (data.personalizeCards.length > 1) ? 2 : 1,
+                                cardsCount: data.personalizeCards.length,
+                                cardBuilder: (context, index, o, i) {
+                                  var item = data.personalizeCards[index];
+                                  return InkWell(
+                                    onTap: () {
+                                      // showCardDetail(
+                                      //     context: context, item: item);
+                                    },
+                                    child: cardWidget(item),
+                                  );
+                                }),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 60.w),
+                        child: const AppImage("assets/linedivider.svg"),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                        ),
+                        child: Text(
+                          "Personalized Card",
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 60.w),
+                        child: const AppImage("assets/linedivider.svg"),
+                      ),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                    ],
+                  ),
+          ],
+        );
+      });
+
+  Widget cardWidget(PersonalizeModel item) => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 375,
+            width: 275,
+            alignment: Alignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 345,
+                  width: 275,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(width: 2, color: primary),
+                  ),
+                  child: Column(
+                    children: [
+                      Stack(
+                        children: [
+                          (_selectedCardImage == null)
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(15),
+                                      topRight: Radius.circular(15)),
+                                  child: cacheImageBG(
+                                      image: item.image ?? '',
+                                      radius: 0,
+                                      height: 170,
+                                      width: 275),
+                                )
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(15),
+                                      topRight: Radius.circular(15)),
+                                  child: Container(
+                                    height: 170,
+                                    width: 275,
+                                    decoration: BoxDecoration(
+                                        // border:
+                                        //     Border.all(color: grey.withOpacity(0.5)),
+                                        // borderRadius: BorderRadius.circular(100),
+                                        image: DecorationImage(
+                                      image: FileImage(
+                                          File(_selectedCardImage!.path)),
+                                    )),
+                                  ),
+                                ),
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: -8,
+                            child: Container(
+                              clipBehavior: Clip.hardEdge,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.fitWidth,
+                                      image: AssetImage(
+                                        "assets/ic_card1.png",
+                                      ))),
+                              child: Center(
+                                child: Text(
+                                  item.title,
+                                  style: TextStyle(
+                                      letterSpacing: 4,
+                                      fontFamily: "BankGothic",
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 0,
+                            bottom: 0,
+                            left: 10,
+                            child: AppImage(
+                              "https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg",
+                              height: 20,
+                              width: 20,
+                            ),
+                          )
+                        ],
+                      ),
+                      Stack(
+                        children: [
+                          Container(
+                            height: 171,
+                            width: 275,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(15),
+                                    bottomRight: Radius.circular(15)),
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: AssetImage(
+                                    "assets/pCard.png",
+                                  ),
+                                )),
+                          ),
+                          Positioned(
+                              top: 15,
+                              right: 1,
+                              left: 1,
+                              child: Center(
+                                child: Text(
+                                  item.name,
+                                  style: TextStyle(
+                                      letterSpacing: 4,
+                                      fontFamily: "BankGothic",
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              )),
+                          Positioned(
+                              top: 50,
+                              right: 1,
+                              left: 1,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: AppImage("assets/linedivider.svg"),
+                              )),
+                          Positioned(
+                              top: 70,
+                              left: 1,
+                              right: 1,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  SizedBox(
+                                    width: 1,
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        item.rank,
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                      ),
+                                      Text(
+                                        "LEADERBOARD RANK",
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontSize: 6,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                ],
+                              )),
+                          Positioned(
+                              bottom: 0,
+                              left: 0,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
+                                // height: 30.h,
+                                decoration: BoxDecoration(
+                                  color: primary,
+                                  borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(15),
+                                      topRight: Radius.circular(25)),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    item.completionDate,
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w500,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                ),
+                              ))
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
   Widget get profileSection => Consumer2<ProfileProvider, UsersProvider>(
           builder: (context, data, userData, child) {
         return Column(
@@ -318,74 +583,332 @@ class _ProfileScreenState extends State<ProfileScreen>
         );
       });
 
-  Widget get cardSection =>
-      Consumer<ProfileProvider>(builder: (context, data, child) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            (data.personalizeCards.isEmpty)
-                ? SizedBox(
-                    height: 0,
-                  )
-                : Column(
-                    children: [
-                      Center(
-                        child: Container(
-                          height: 365,
-                          width: MediaQuery.sizeOf(context).width,
-                          alignment: Alignment.center,
-                          child: Center(
-                            child: CardSwiper(
-                                padding: EdgeInsets.zero,
-                                direction: CardSwiperDirection.right,
-                                numberOfCardsDisplayed:
-                                    (data.personalizeCards.length > 1) ? 2 : 1,
-                                cardsCount: data.personalizeCards.length,
-                                cardBuilder: (context, index, o, i) {
-                                  var item = data.personalizeCards[index];
-                                  return InkWell(
-                                    onTap: () {
-                                      showCardDetail(
-                                          context: context, item: item);
-                                    },
-                                    child: cardWidget(item),
+  Widget
+      get cardSection1 =>
+          Consumer<ProfileProvider>(builder: (context, data, child) {
+            return Column(
+              children: [
+                SizedBox(
+                  height: 365,
+                  child: CardSwiper(
+                      padding: EdgeInsets.zero,
+                      direction: CardSwiperDirection.right,
+                      cardsCount: 10,
+                      cardBuilder: (context, index, o, i) {
+                        return InkWell(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Center(
+                                    child: SizedBox(
+                                      height: 403.h,
+                                      child: StatefulBuilder(
+                                          builder: (context, _) {
+                                        return Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Flexible(
+                                              child: PageView.builder(
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  itemCount: 5,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.pop(context);
+                                                        showDialog(
+                                                            context: context,
+                                                            builder: (context) {
+                                                              return SingleChildScrollView(
+                                                                child: Column(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    SizedBox(
+                                                                      height:
+                                                                          10.h,
+                                                                    ),
+                                                                    cardDesign(),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          20.h,
+                                                                    ),
+                                                                    Padding(
+                                                                      padding: EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              60.w),
+                                                                      child: const AppImage(
+                                                                          "assets/linedivider.svg"),
+                                                                    ),
+                                                                    Padding(
+                                                                      padding:
+                                                                          const EdgeInsets
+                                                                              .symmetric(
+                                                                        vertical:
+                                                                            10,
+                                                                      ),
+                                                                      child:
+                                                                          Text(
+                                                                        "Add Information",
+                                                                        style: GoogleFonts
+                                                                            .poppins(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontSize:
+                                                                              15.sp,
+                                                                          fontWeight:
+                                                                              FontWeight.w500,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Padding(
+                                                                      padding: EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              60.w),
+                                                                      child: const AppImage(
+                                                                          "assets/linedivider.svg"),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          10.h,
+                                                                    ),
+                                                                    Container(
+                                                                      margin: EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              20.w),
+                                                                      padding: EdgeInsets
+                                                                          .all(12
+                                                                              .r),
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: const Color(
+                                                                            0xff323232),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(19),
+                                                                      ),
+                                                                      child:
+                                                                          Column(
+                                                                        children: [
+                                                                          titlesubtitle(
+                                                                            title:
+                                                                                "Name",
+                                                                            subtitle:
+                                                                                "Shasank Verma",
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                10.h,
+                                                                          ),
+                                                                          titlesubtitle(
+                                                                            title:
+                                                                                "Age",
+                                                                            subtitle:
+                                                                                "26",
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                10.h,
+                                                                          ),
+                                                                          titlesubtitle(
+                                                                            title:
+                                                                                "Nationality",
+                                                                            subtitle:
+                                                                                "India",
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                10.h,
+                                                                          ),
+                                                                          titlesubtitle(
+                                                                            title:
+                                                                                "Membership",
+                                                                            subtitle:
+                                                                                "Pro Member",
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                10.h,
+                                                                          ),
+                                                                          titlesubtitle(
+                                                                            title:
+                                                                                "Level",
+                                                                            subtitle:
+                                                                                "1",
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                10.h,
+                                                                          ),
+                                                                          titlesubtitle(
+                                                                            title:
+                                                                                "Training Streak",
+                                                                            subtitle:
+                                                                                "259",
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                10.h,
+                                                                          ),
+                                                                          titlesubtitle(
+                                                                            title:
+                                                                                "Leaderbord Rank",
+                                                                            subtitle:
+                                                                                "25",
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                10.h,
+                                                                          ),
+                                                                          titlesubtitle(
+                                                                            title:
+                                                                                "Date",
+                                                                            subtitle:
+                                                                                "3 Aug,23",
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                10.h,
+                                                                          ),
+                                                                          Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              Text(
+                                                                                "Image",
+                                                                                style: GoogleFonts.poppins(
+                                                                                  color: Colors.white,
+                                                                                  fontSize: 12.sp,
+                                                                                  fontWeight: FontWeight.w500,
+                                                                                ),
+                                                                              ),
+                                                                              Row(
+                                                                                children: [
+                                                                                  Container(
+                                                                                    width: 130.w,
+                                                                                    padding: const EdgeInsets.all(8),
+                                                                                    decoration: BoxDecoration(
+                                                                                      border: Border.all(
+                                                                                        color: const Color(0xff555555),
+                                                                                      ),
+                                                                                      borderRadius: BorderRadius.circular(2),
+                                                                                    ),
+                                                                                    child: Text(
+                                                                                      "Potrait.jpg",
+                                                                                      textAlign: TextAlign.end,
+                                                                                      style: GoogleFonts.poppins(
+                                                                                        color: Colors.white,
+                                                                                        fontSize: 10.sp,
+                                                                                        fontWeight: FontWeight.w400,
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                  Container(
+                                                                                    padding: const EdgeInsets.all(8),
+                                                                                    decoration: BoxDecoration(
+                                                                                      color: const Color(0xff555555),
+                                                                                      borderRadius: BorderRadius.circular(2),
+                                                                                    ),
+                                                                                    child: Text(
+                                                                                      "Browse Files",
+                                                                                      style: GoogleFonts.poppins(
+                                                                                        color: Colors.white,
+                                                                                        fontSize: 10.sp,
+                                                                                        fontWeight: FontWeight.w500,
+                                                                                      ),
+                                                                                    ),
+                                                                                  )
+                                                                                ],
+                                                                              )
+                                                                            ],
+                                                                          )
+                                                                        ],
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            });
+                                                      },
+                                                      child: SizedBox(
+                                                        width: 380.w,
+                                                        child: cardDesign(),
+                                                      ),
+                                                    );
+                                                  }),
+                                            ),
+                                            SizedBox(
+                                              height: 20.h,
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 60.w),
+                                              child: const AppImage(
+                                                  "assets/linedivider.svg"),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: 10,
+                                              ),
+                                              child: Text(
+                                                "Personalized Card",
+                                                style: GoogleFonts.poppins(
+                                                  color: Colors.white,
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 60.w),
+                                              child: const AppImage(
+                                                  "assets/linedivider.svg"),
+                                            ),
+                                          ],
+                                        );
+                                      }),
+                                    ),
                                   );
-                                }),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20.h,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 60.w),
-                        child: const AppImage("assets/linedivider.svg"),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                        ),
-                        child: Text(
-                          "Personalized Card",
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 60.w),
-                        child: const AppImage("assets/linedivider.svg"),
-                      ),
-                      SizedBox(
-                        height: 20.h,
-                      ),
-                    ],
+                                });
+                          },
+                          child: cardDesign(),
+                        );
+                      }),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 60.w),
+                  child: const AppImage("assets/linedivider.svg"),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
                   ),
-          ],
-        );
-      });
+                  child: Text(
+                    "Personalized Card",
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 60.w),
+                  child: const AppImage("assets/linedivider.svg"),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+              ],
+            );
+          });
 
   Widget get postSection =>
       Consumer<ProfileProvider>(builder: (context, data, child) {
@@ -530,7 +1053,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         ),
       );
 
-  Widget titleSubtitle({required String title, required String subtitle}) {
+  Widget titlesubtitle({required String title, required String subtitle}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -565,204 +1088,237 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  Widget cardWidget(PersonalizeModel item) => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            height: 375,
-            width: 275,
-            alignment: Alignment.center,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 345,
-                  width: 275,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(width: 2, color: primary),
+  Widget cardDesign() {
+    return Consumer<ProfileProvider>(builder: (context, data, child) {
+      return Container(
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+          image: const DecorationImage(
+            fit: BoxFit.fitWidth,
+            image: AssetImage(
+              "assets/ic_card2.png",
+            ),
+          ),
+          borderRadius: BorderRadius.circular(15),
+          color: const Color(0xffffffff),
+          border: Border.all(
+            color: const Color(0xff24D993),
+            width: 1.5,
+          ),
+        ),
+        margin: EdgeInsets.symmetric(
+          horizontal: 60,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              clipBehavior: Clip.hardEdge,
+              height: 200,
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                fit: BoxFit.cover,
+                image: AssetImage(
+                  "assets/ic_card.png",
+                ),
+              )),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Transform.translate(
+                    offset: Offset(100, -5),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30.w,
+                        vertical: 10.h,
+                      ),
+                      decoration: const BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage(
+                        "assets/ic_card_4.png",
+                      ))),
+                      child: Center(
+                        child: Text(
+                          "      PRO MEMBER",
+                          style: GoogleFonts.poppins(
+                            color: Colors.black,
+                            fontSize: 7.sp,
+                            fontWeight: FontWeight.w500,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  child: Column(
-                    children: [
-                      Stack(
-                        children: [
-                          (_selectedCardImage == null)
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(15),
-                                      topRight: Radius.circular(15)),
-                                  child: cacheImageBG(
-                                      image: item.image ?? '',
-                                      radius: 0,
-                                      height: 170,
-                                      width: 275),
-                                )
-                              : ClipRRect(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(15),
-                                      topRight: Radius.circular(15)),
-                                  child: Container(
-                                    height: 170,
-                                    width: 275,
-                                    decoration: BoxDecoration(
-                                        // border:
-                                        //     Border.all(color: grey.withOpacity(0.5)),
-                                        // borderRadius: BorderRadius.circular(100),
-                                        image: DecorationImage(
-                                      image: FileImage(
-                                          File(_selectedCardImage!.path)),
-                                    )),
-                                  ),
-                                ),
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            bottom: -8,
-                            child: Container(
-                              clipBehavior: Clip.hardEdge,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      fit: BoxFit.fitWidth,
-                                      image: AssetImage(
-                                        "assets/ic_card1.png",
-                                      ))),
-                              child: Center(
-                                child: Text(
-                                  item.title,
-                                  style: TextStyle(
-                                      letterSpacing: 4,
-                                      fontFamily: "BankGothic",
-                                      color: Colors.black,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400),
-                                ),
+                  Container(
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [Color(0xff7971B5), Color(0xff202243)],
+                      ),
+                    ),
+                    child: Text(
+                      "26",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 9.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                    ),
+                    child: AppImage(
+                      "https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg",
+                      height: 20.h,
+                      width: 20.w,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Transform.translate(
+              offset: const Offset(0, -35),
+              child: Column(
+                children: [
+                  Container(
+                    clipBehavior: Clip.hardEdge,
+                    height: 40.h,
+                    decoration: const BoxDecoration(
+                        image: DecorationImage(
+                            fit: BoxFit.fitWidth,
+                            image: AssetImage(
+                              "assets/ic_card1.png",
+                            ))),
+                    child: Center(
+                      child: Text(
+                        "LEVEL 1",
+                        style: TextStyle(
+                            letterSpacing: 4,
+                            fontFamily: "BankGothic",
+                            color: Colors.black,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                  ),
+                  Transform.translate(
+                    offset: const Offset(0, 10),
+                    child: Text(
+                      '',
+                      style: TextStyle(
+                          letterSpacing: 4,
+                          fontFamily: "BankGothic",
+                          color: Colors.white,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                  Transform.translate(
+                    offset: const Offset(0, 20),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: const AppImage("assets/linedivider.svg"),
+                    ),
+                  ),
+                  Transform.translate(
+                    offset: const Offset(0, 30),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(
+                          children: [
+                            Text(
+                              "250",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w700,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                            Text(
+                              "TRAINING STREAK",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 6.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              "25th",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w700,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                            Text(
+                              "LEADERBOARD RANK",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 6.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  Transform.translate(
+                    offset: const Offset(-17, 45),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 30.w,
+                            vertical: 10.h,
+                          ),
+                          // height: 30.h,
+                          decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(
+                            "assets/ic_card3.png",
+                          ))),
+                          child: Center(
+                            child: Text(
+                              "3 AUG ‘23",
+                              style: GoogleFonts.poppins(
+                                color: Colors.black,
+                                fontSize: 9.sp,
+                                fontWeight: FontWeight.w500,
+                                fontStyle: FontStyle.italic,
                               ),
                             ),
                           ),
-                          Positioned(
-                            top: 0,
-                            bottom: 0,
-                            left: 10,
-                            child: AppImage(
-                              "https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg",
-                              height: 20,
-                              width: 20,
-                            ),
-                          )
-                        ],
-                      ),
-                      Stack(
-                        children: [
-                          Container(
-                            height: 171,
-                            width: 275,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(15),
-                                    bottomRight: Radius.circular(15)),
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage(
-                                    "assets/pCard.png",
-                                  ),
-                                )),
-                          ),
-                          Positioned(
-                              top: 15,
-                              right: 1,
-                              left: 1,
-                              child: Center(
-                                child: Text(
-                                  item.name,
-                                  style: TextStyle(
-                                      letterSpacing: 4,
-                                      fontFamily: "BankGothic",
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              )),
-                          Positioned(
-                              top: 50,
-                              right: 1,
-                              left: 1,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: AppImage("assets/linedivider.svg"),
-                              )),
-                          Positioned(
-                              top: 70,
-                              left: 1,
-                              right: 1,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  SizedBox(
-                                    width: 1,
-                                  ),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        item.rank,
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w700,
-                                          fontStyle: FontStyle.italic,
-                                        ),
-                                      ),
-                                      Text(
-                                        "LEADERBOARD RANK",
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.white,
-                                          fontSize: 6,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              )),
-                          Positioned(
-                              bottom: 0,
-                              left: 0,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 5,
-                                ),
-                                // height: 30.h,
-                                decoration: BoxDecoration(
-                                  color: primary,
-                                  borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(15),
-                                      topRight: Radius.circular(25)),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    item.completionDate,
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.black,
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.w500,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                ),
-                              ))
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
+    });
+  }
 
   Widget videoItem(
           {required ProfileVideoModel item,
@@ -785,230 +1341,6 @@ class _ProfileScreenState extends State<ProfileScreen>
               width: width * 0.33),
         ),
       );
-
-  void showCardDetail(
-      {required BuildContext context, required PersonalizeModel item}) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Center(
-            child: SizedBox(
-              height: 415,
-              child: StatefulBuilder(builder: (context, _) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: PageView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: 5,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                                showEditCard(context: context, item: item);
-                              },
-                              child: SizedBox(
-                                width: 380,
-                                child: cardWidget(item),
-                              ),
-                            );
-                          }),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 60),
-                      child: AppImage("assets/linedivider.svg"),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 10,
-                      ),
-                      child: Text(
-                        "Personalized Card",
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 60),
-                      child: AppImage("assets/linedivider.svg"),
-                    ),
-                  ],
-                );
-              }),
-            ),
-          );
-        });
-  }
-
-  void showEditCard(
-      {required BuildContext context, required PersonalizeModel item}) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(builder: (context, setter) {
-            return SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  cardWidget(item),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 60),
-                    child: const AppImage("assets/linedivider.svg"),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                    ),
-                    child: Text(
-                      "Add Information",
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 60),
-                    child: const AppImage("assets/linedivider.svg"),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Color(0xff323232),
-                      borderRadius: BorderRadius.circular(19),
-                    ),
-                    child: Column(
-                      children: [
-                        titleSubtitle(
-                          title: "Name",
-                          subtitle: item.name,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        titleSubtitle(
-                          title: "Nationality",
-                          subtitle: "India",
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        titleSubtitle(
-                          title: "Level",
-                          subtitle: item.title,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        titleSubtitle(
-                          title: "Leaderboard Rank",
-                          subtitle: item.rank,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        titleSubtitle(
-                          title: "Date",
-                          subtitle: item.completionDate,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(right: 15),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Image",
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              (_selectedCardImage == null)
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        getPickerCard(
-                                            ImageSource.gallery, setter);
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 8),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xff555555),
-                                          borderRadius:
-                                              BorderRadius.circular(2),
-                                        ),
-                                        child: Text(
-                                          "Browse Files",
-                                          style: GoogleFonts.poppins(
-                                            color: Colors.white,
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  : GestureDetector(
-                                      onTap: () {
-                                        onUploadCardImage(item.id, setter);
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 8),
-                                        decoration: BoxDecoration(
-                                          color: primary,
-                                          borderRadius:
-                                              BorderRadius.circular(2),
-                                        ),
-                                        child: Text(
-                                          "Upload",
-                                          style: GoogleFonts.poppins(
-                                            color: Colors.white,
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            );
-          });
-        });
-  }
 
   Future<void> getPicker(ImageSource imageSource) async {
     try {
@@ -1050,61 +1382,5 @@ class _ProfileScreenState extends State<ProfileScreen>
         log('==>>>${_selectedImage!.path.toString().split('/').last.replaceAll('\'', '')}');
       }
     });
-  }
-
-  Future<void> getPickerCard(ImageSource imageSource, setter) async {
-    try {
-      XFile? image = await ImagePicker().pickImage(
-        source: imageSource,
-        maxWidth: 1024,
-        maxHeight: 1024,
-      );
-      // _selectedImage = File(image!.path);
-
-      _imageCropperCard(File(image!.path), setter);
-    } on CameraException catch (e) {
-      // TODO
-      customToast(context: context, msg: e.description.toString(), type: 0);
-    }
-  }
-
-  Future<void> _imageCropperCard(File photo, setter) async {
-    CroppedFile? cropPhoto = await ImageCropper().cropImage(
-      sourcePath: photo.path,
-      maxWidth: 1024,
-      maxHeight: 1024,
-      compressFormat: ImageCompressFormat.png,
-      aspectRatioPresets: [
-        CropAspectRatioPreset.ratio5x3,
-        CropAspectRatioPreset.ratio16x9,
-      ],
-    );
-    setter(() {
-      if (cropPhoto != null) {
-        _selectedCardImage = File(cropPhoto.path);
-
-        log('==>>>${_selectedCardImage!.path}');
-        log('==>>>${_selectedCardImage!.path.toString().split('/').last.replaceAll('\'', '')}');
-      }
-    });
-  }
-
-  Future<void> onUploadCardImage(String cardId, setter) async {
-    if (_selectedCardImage != null) {
-      Provider.of<ProfileProvider>(context, listen: false)
-          .editProfileCard(
-              context: context,
-              filePath: _selectedCardImage!.path,
-              cardId: cardId)
-          .then((value) {
-        navPop(context: context);
-
-        getCard();
-
-        log('==>aaaa>>${_selectedCardImage!.path}');
-      });
-    } else {
-      commonToast(msg: 'Please select background image', color: red);
-    }
   }
 }
