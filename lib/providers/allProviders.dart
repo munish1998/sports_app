@@ -1,5 +1,6 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+import 'package:touchmaster/providers/messageProviders.dart';
 
 import '/providers/challengesProvider.dart';
 import '/providers/videoProvider.dart';
@@ -28,5 +29,6 @@ class AllProviders {
     ChangeNotifierProvider(create: (_) => VideoProvider()),
     ChangeNotifierProvider(create: (_) => ChallengeProvider()),
     ChangeNotifierProvider(create: (_) => LeaderboardProvider()),
+    ChangeNotifierProvider(create: (_) => MessageProvider()),
   ];
 }

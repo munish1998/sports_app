@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -260,6 +262,28 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 
+  Future<void> _editpersonalizeCard(
+      {required BuildContext context,
+      required String filepath,
+      required String cardId}) async {
+    var data = Uri.parse(Apis.updatePersonalizeCard);
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    // _edit = false;
+    try {
+      var request = http.MultipartRequest('POST', data);
+      if (filepath.isNotEmpty) {
+        var pic = await http.MultipartFile.fromPath('image', filepath);
+        request.files.add(pic);
+      }
+      request.headers['access_Token'] =
+          pref.getString(accessTokenKey).toString();
+      request.headers['content_Type'] = 'application/x-www-form-urlencoded';
+      request.fields.addAll({'user_id': pref.getString(userIdKey).toString()});
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   Future<void> editProfileCard({
     required BuildContext context,
     required String filePath,
@@ -318,6 +342,29 @@ class ProfileProvider with ChangeNotifier {
       // TODO
 
       // navPop(context: context);
+    }
+  }
+
+  Future<void> _personalizecardImage(
+      {required BuildContext context,
+      required String filePath,
+      required String cardId}) async {
+    var url = Uri.parse(Apis.updatePersonalizeCard);
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    try {
+      var request = http.MultipartRequest('post', url);
+      if (filePath.isEmpty) {
+        var pic = await http.MultipartFile.fromPath('image', filePath);
+        request.files.add(pic);
+        log('filepath name=======>>>>>>>$filePath');
+      }
+      request.headers['access_Token'] =
+          pref.getString(accessTokenKey).toString();
+      request.headers['content_Type'] = 'application/x-www-form-urlencoded';
+      request.fields.addAll(
+          {'user_id': pref.getString(userIdKey).toString(), 'card_id': cardId});
+    } catch (e) {
+      return print(e.toString());
     }
   }
 

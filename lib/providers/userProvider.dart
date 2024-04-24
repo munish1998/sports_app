@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:touchmaster/model/mesageModel.dart';
 
 import '../model/profileModel.dart';
 import '../model/profileVideoModel.dart';
@@ -16,6 +17,9 @@ class UsersProvider with ChangeNotifier {
 
   List<UsersModel> get usersList => _usersList;
   List<UsersModel> _usersFollowList = [];
+
+  List<MessageModel> _chatList = [];
+  List<MessageModel> get chatList => _chatList;
 
   List<UsersModel> get usersFollowList => _usersFollowList;
 
@@ -50,6 +54,34 @@ class UsersProvider with ChangeNotifier {
       _usersSuggestList.remove(item);
     }
     notifyListeners();
+  }
+
+  Future<void> getChat1({
+    required BuildContext context,
+    required Map data,
+  }) async {
+    try {
+      var url = Uri.parse(Apis.getchatHistory);
+
+      final response = await ApiClient().postDataByToken(
+        context: context,
+        url: url,
+        body: data,
+      );
+      log('respone of chatlist api=======>>>>>>>>${response.body}');
+      if (response.statusCode == 200) {
+        var result = jsonDecode(response.body);
+        if (result['code'] == 200) {
+          var list = result['Chat History'] as List;
+          _chatList.clear(); // Clear existing chat list
+          _chatList = list.map((e) => MessageModel.fromJson(e)).toList();
+          notifyListeners();
+        } else if (result['code'] == 401) {
+          Provider.of<AuthProvider>(context, listen: false).logout(context);
+        } else if (result['code'] == 201) {
+        } else {}
+      } else {}
+    } catch (error) {}
   }
 
   Future<void> addUser(UsersModel item, int type) async {

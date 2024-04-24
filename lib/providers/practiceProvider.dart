@@ -80,7 +80,8 @@ class PracticeProvider with ChangeNotifier {
   Future<void> getPractices(
       {required BuildContext context, required Map data}) async {
     var url = Uri.parse(Apis.practices);
-    // debugPrint('Data-==>  $url');
+    debugPrint(
+        'data respose=============================>>>>>>>>>>>>>>>>>>>>>>>>>>>>>$url');
     // showLoaderDialog(context, 'Please wait...');
     final response = await ApiClient()
         .postDataByToken(context: context, url: url, body: data);

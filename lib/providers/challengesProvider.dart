@@ -24,7 +24,7 @@ class ChallengeProvider with ChangeNotifier {
 
   List<ChallengeModel> get challengeList => _challengeList;
 
-  Future<void> getChallenges(
+  Future<void> getChallenges1(
       {required BuildContext context, required Map data}) async {
     var url = Uri.parse(Apis.getChallenges);
     // debugPrint('Data-==>  $url');

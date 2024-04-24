@@ -46,7 +46,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     var data = {
       'user_id': pref!.getString(userIdKey) ?? '',
     };
-    pro.getChallenges(context: context, data: data);
+    // pro.getChallenges(context: context, data: data);
   }
 
   Future<bool> initializePlayer1(String video) async {
@@ -166,7 +166,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                 return challengeItems(data.challengeList[index], () {
                   // Remove the challenge from the list
                   setState(() {
-                    data.challengeList.removeAt(index);
+                    //data.challengeList.removeAt(index);
                   });
                 });
               },

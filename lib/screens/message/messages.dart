@@ -1,22 +1,45 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:touchmaster/providers/messageProviders.dart';
+
+import 'package:touchmaster/utils/constant.dart';
 
 import '../../utils/color.dart';
 import '/common/cacheImage.dart';
-import '/providers/userProvider.dart';
 import '/screens/message/openmessage.dart';
 import '/utils/commonMethod.dart';
 import '/utils/size_extension.dart';
 
 class MessageScreen extends StatefulWidget {
-  const MessageScreen({super.key});
+  MessageScreen({Key? key}) : super(key: key);
 
   @override
-  State<MessageScreen> createState() => _MessageScreenState();
+  _MessageScreenState createState() => _MessageScreenState();
 }
 
 class _MessageScreenState extends State<MessageScreen> {
+  SharedPreferences? pref;
+
+  @override
+  void initState() {
+    super.initState();
+    initFun();
+  }
+
+  initFun() async {
+    var pro = Provider.of<MessageProvider>(context, listen: false);
+
+    pref = await SharedPreferences.getInstance();
+    var data = {
+      'user_id': pref!.getString(userIdKey) ?? '',
+    };
+    log('response of get chat====---===----$data');
+    pro.getChat(context: context, data: data);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,70 +47,73 @@ class _MessageScreenState extends State<MessageScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         leading: InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-            )),
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.white,
+          ),
+        ),
         centerTitle: true,
         title: Text(
           "Inbox",
           style: TextStyle(
-              letterSpacing: 4,
-              fontFamily: "BankGothic",
-              color: Colors.white,
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w400),
+            letterSpacing: 4,
+            fontFamily: "BankGothic",
+            color: Colors.white,
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w400,
+          ),
         ),
         actions: [
           IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.menu,
-                color: Colors.black,
-              ))
+            onPressed: () {},
+            icon: const Icon(
+              Icons.menu,
+              color: Colors.black,
+            ),
+          ),
         ],
       ),
-      body: body,
-    );
-  }
-
-  Widget get body => Consumer<UsersProvider>(builder: (context, data, child) {
-        return (data.usersFollowList.isEmpty)
-            ? Center(
-                child: Text(
-                  'You have no any connection yet!',
-                  style: TextStyle(color: Colors.white54),
-                ),
-              )
-            : Container(
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: ListView.separated(
+      body: Consumer<MessageProvider>(
+        builder: (context, data, child) {
+          return (data.chatList.isEmpty)
+              ? Center(
+                  child: Text(
+                    'You have no any connection yet!',
+                    style: TextStyle(color: Colors.white54),
+                  ),
+                )
+              : Container(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: ListView.separated(
                       separatorBuilder: (context, index) {
                         return SizedBox(
                           height: 25,
                         );
                       },
-                      itemCount: data.usersFollowList.length,
+                      itemCount: data.chatList.length,
                       itemBuilder: (context, index) {
-                        var item = data.usersFollowList[index];
+                        var item = data.chatList[index];
                         return InkWell(
                           onTap: () {
                             navPush(
-                                context: context, action: OpenMessageScreen());
+                              context: context,
+                              action: OpenMessageScreen(),
+                            );
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               cacheImages(
-                                  image: item.profilePicture,
-                                  radius: 100,
-                                  height: 50,
-                                  width: 50),
+                                image: '',
+                                radius: 100,
+                                height: 50,
+                                width: 50,
+                              ),
                               SizedBox(
                                 width: 15,
                               ),
@@ -100,7 +126,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          item.name,
+                                          item.senderId ?? '',
                                           style: GoogleFonts.inter(
                                             color: white,
                                             fontSize: 15,
@@ -116,9 +142,10 @@ class _MessageScreenState extends State<MessageScreen> {
                                           child: Text(
                                             "2",
                                             style: GoogleFonts.inter(
-                                                color: Colors.white,
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500),
+                                              color: Colors.white,
+                                              fontSize: 12.sp,
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -127,7 +154,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                       height: 5,
                                     ),
                                     Text(
-                                      "Simply dummy text of the and typeset",
+                                      item.datetime ?? '',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -141,8 +168,12 @@ class _MessageScreenState extends State<MessageScreen> {
                             ],
                           ),
                         );
-                      }),
-                ),
-              );
-      });
+                      },
+                    ),
+                  ),
+                );
+        },
+      ),
+    );
+  }
 }

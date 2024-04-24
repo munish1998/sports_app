@@ -63,4 +63,9 @@ class Apis {
       '${baseUrl}video/update_video_statistics';
   static const String updateVideoStatus =
       '${baseUrl}video/update_profile_video_status';
+
+  //-------------------Chat section
+
+  static const String addChat = '${baseUrl}chat/add_chat';
+  static const String getchatHistory = '${baseUrl}chat/chat_history';
 }
