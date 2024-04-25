@@ -14,7 +14,9 @@ import '/utils/commonMethod.dart';
 import '/utils/size_extension.dart';
 
 class MessageScreen extends StatefulWidget {
-  MessageScreen({Key? key}) : super(key: key);
+  MessageScreen({
+    Key? key,
+  });
 
   @override
   _MessageScreenState createState() => _MessageScreenState();
@@ -99,9 +101,18 @@ class _MessageScreenState extends State<MessageScreen> {
                         var item = data.chatList[index];
                         return InkWell(
                           onTap: () {
+                            // log('rceiverId======>>>>>>$item');
+                            // log('receiverId response=====>>>>>${item.receiverId}');
+                            // log('senderId response======>>>>>>${item.senderId}');
                             navPush(
                               context: context,
-                              action: OpenMessageScreen(),
+                              action: OpenMessageScreen(
+                                receiverId: item.receiverId.toString() ==
+                                        pref!.getString(userIdKey).toString()
+                                    ? item.senderId.toString()
+                                    : item.receiverId.toString(),
+                                senderId: item.senderId.toString(),
+                              ),
                             );
                           },
                           child: Row(

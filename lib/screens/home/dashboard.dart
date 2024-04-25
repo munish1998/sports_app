@@ -375,9 +375,9 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   Future<void> _getLevels() async {
     var pro = Provider.of<LevelProvider>(context, listen: false);
-    var data = {
-      'user_id': pref!.getString(userIdKey) ?? '',
-    };
+    var userId = pref!.getString(userIdKey) ?? '';
+    var data = {'user_id': userId};
+    log('userId response of level====>>>>$userId');
     pro.getLevels(context: context, data: data);
   }
 }

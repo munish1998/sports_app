@@ -83,6 +83,7 @@
 
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -93,23 +94,29 @@ import 'package:touchmaster/providers/messageProviders.dart';
 import 'package:touchmaster/providers/userProvider.dart';
 import 'package:touchmaster/screens/account/profile1.dart';
 import 'package:touchmaster/utils/constant.dart';
+import 'package:touchmaster/utils/customLoader.dart';
 
 import '/app_image.dart';
 import '/screens/account/profile.dart';
 import '/utils/size_extension.dart';
 
 class OpenMessageScreen extends StatefulWidget {
+  String? receiverId;
+  String senderId;
   //final UsersModel users;
-  const OpenMessageScreen({
-    super.key,
-  });
+  OpenMessageScreen({super.key, this.receiverId, required this.senderId});
 
   @override
-  State<OpenMessageScreen> createState() => _OpenMessageScreenState();
+  State<OpenMessageScreen> createState() =>
+      _OpenMessageScreenState(receiverId1: receiverId, senderId: senderId);
 }
 
 class _OpenMessageScreenState extends State<OpenMessageScreen> {
+  TextEditingController textcontroller = TextEditingController();
   SharedPreferences? pref;
+  String? receiverId1;
+  String? senderId;
+  _OpenMessageScreenState({required this.receiverId1, required this.senderId});
   // List<String> messges = [
   //   "hi",
   //   "hello",
@@ -118,8 +125,10 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
   //   "not well"
   // ];
 
+  // ignore: empty_constructor_bodies
   @override
   Widget build(BuildContext context) {
+    //  log('receiverId========>>>$')
     return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
@@ -180,7 +189,7 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                     itemBuilder: (context, index) {
                       var item = userprovider.chatList[index];
                       log('userprofile response======>>>>>>$item');
-                      if (index.isEven) {
+                      if (index.isEven || index.isOdd) {
                         return ChatBubble(
                           elevation: 0,
                           clipper: ChatBubbleClipper5(
@@ -202,7 +211,7 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                                         MediaQuery.of(context).size.width * 0.5,
                                   ),
                                   child: Text(
-                                    item.datetime ?? '',
+                                    item.message ?? '',
                                     style: GoogleFonts.inter(
                                       color: Colors.white,
                                       fontSize: 14.sp,
@@ -210,7 +219,7 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                                     ),
                                   ),
                                 ),
-                                Text(item.id ?? '',
+                                Text(item.datetime ?? '',
                                     style: GoogleFonts.inter(
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w400,
@@ -238,6 +247,7 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                       children: [
                         Expanded(
                             child: TextFormField(
+                          controller: textcontroller,
                           style: GoogleFonts.inter(
                               color: Colors.white,
                               fontSize: 12.sp,
@@ -321,8 +331,14 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                           builder: (context, value, child) {
                             return InkWell(
                               onTap: () {
-                                var item = value.userProfile;
-                                onChatAdd(receiverId: userIdKey, message: '');
+                                log('senderID==${senderId}');
+                                log('receiverID==${receiverId1}');
+                                log('response=====>>>>>$receiverId1');
+                                //var item = value.userProfile;
+                                onChatAdd(
+                                    receiverId: widget.receiverId.toString(),
+                                    message: textcontroller.text,
+                                    senderId: widget.senderId);
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(15),
@@ -330,8 +346,8 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                                   color: Color(0xff24D993),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Text('Send'),
-                                //child: const AppImage("assets/ic_send.svg"),
+                                //child: Text('Send'),
+                                child: const AppImage("assets/ic_send.svg"),
                               ),
                             );
                           },
@@ -350,15 +366,23 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
   }
 
   Future<void> onChatAdd(
-      {required String receiverId, required String message}) async {
+      {required String receiverId,
+      required String message,
+      required String senderId}) async {
     var pro = Provider.of<MessageProvider>(context, listen: false);
+    // var senderId = pref!.getString(userIdKey) ?? '';
 
     var data = {
-      'sender_id': pref!.getString(userIdKey) ?? '',
+      'sender_id': senderId,
       'receiver_id': receiverId,
-      'message': '',
+      'message': textcontroller.text,
     };
-    log('onchatAdd response======================>>>>>>>>>>>>>>>>>>>>>>>>$data');
+
+    log('senderID response Api====>>>$senderId');
+    // log('onchatAdd response======================>>>>>>>>>>>>>>>>>>>>>>>>$data');
     pro.addChat(context: context, data: data).then((value) {});
+    setState(() {
+      textcontroller.clear();
+    });
   }
 }
