@@ -1,101 +1,12 @@
-// import 'dart:developer';
-
-// import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:touchmaster/model/mesageModel.dart';
-// import 'package:touchmaster/providers/messageProviders.dart';
-
-// import 'package:touchmaster/utils/constant.dart';
-// import 'package:touchmaster/utils/size_extension.dart';
-
-// class OpenMessageScreen extends StatefulWidget {
-//   const OpenMessageScreen({Key? key}) : super(key: key);
-
-//   @override
-//   State<OpenMessageScreen> createState() => _OpenMessageScreenState();
-// }
-
-// class _OpenMessageScreenState extends State<OpenMessageScreen> {
-//   SharedPreferences? pref;
-//   @override
-//   void initState() {
-//     super.initState();
-//     initFun();
-//   }
-
-//   initFun() async {
-//     var pro = Provider.of<MessageProvider>(context, listen: false);
-//     await pro.getChat(context: context, data: {});
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.black,
-//       appBar: AppBar(
-//         title: Text('Chat History'),
-//       ),
-//       body: Consumer<MessageProvider>(
-//         builder: (context, messageProvider, _) {
-//           if (messageProvider.chatList.isEmpty) {
-//             return Center(
-//               child: Text(
-//                 'No chat history found',
-//                 style: TextStyle(
-//                   fontFamily: "BankGothic",
-//                   color: Colors.white,
-//                   fontSize: 20.sp,
-//                   fontWeight: FontWeight.w400,
-//                 ),
-//               ),
-//             );
-//           } else {
-//             return ListView.builder(
-//               itemCount: messageProvider.chatList.length,
-//               itemBuilder: (context, index) {
-//                 MessageModel message = messageProvider.chatList[index];
-//                 return ListTile(
-//                   title: Text(message.message ?? ''),
-//                   subtitle: Text(message.datetime ?? ''),
-//                 );
-//               },
-//             );
-//           }
-//         },
-//       ),
-//     );
-//   }
-
-// Future<void> onChallenge(
-//     {required String challengeId, required String exerciseId}) async {
-//   var pro = Provider.of<MessageProvider>(context, listen: false);
-
-//   var data = {
-//     'user_id': pref!.getString(userIdKey) ?? '',
-//     'challenger_id': challengeId,
-//     'exercise_id': exerciseId,
-//   };
-
-//   pro.addChat(context: context, data: data).then((value) {});
-// }
-// }
-
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:touchmaster/model/usersModel.dart';
-import 'package:touchmaster/providers/challengesProvider.dart';
 import 'package:touchmaster/providers/messageProviders.dart';
 import 'package:touchmaster/providers/userProvider.dart';
-import 'package:touchmaster/screens/account/profile1.dart';
-import 'package:touchmaster/utils/constant.dart';
-import 'package:touchmaster/utils/customLoader.dart';
-
+import 'package:touchmaster/utils/color.dart';
 import '/app_image.dart';
 import '/screens/account/profile.dart';
 import '/utils/size_extension.dart';
@@ -117,6 +28,22 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
   String? receiverId1;
   String? senderId;
   _OpenMessageScreenState({required this.receiverId1, required this.senderId});
+  String? timeformat(String? datetime) {}
+  String? _extractTime(String? datetime) {
+    if (datetime == null || datetime.isEmpty) return null;
+
+    var parts = datetime.split(' ');
+
+    if (parts.length == 2) {
+      var timeParts = parts[1].split(':');
+
+      if (timeParts.length == 2) {
+        return '${timeParts[0]}:${timeParts[1]}';
+      }
+    }
+
+    return null;
+  }
   // List<String> messges = [
   //   "hi",
   //   "hello",
@@ -152,7 +79,7 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
               );
             },
             child: Text(
-              'munish',
+              widget.receiverId.toString(),
               style: TextStyle(
                   fontFamily: "BankGothic",
                   color: Colors.white,
@@ -175,66 +102,78 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
             return Stack(
               children: [
                 Padding(
-                  padding: EdgeInsets.only(
-                    bottom: 80.h,
-                    left: 16.w,
-                    right: 16.w,
-                  ),
-                  child: ListView.builder(
-                    itemCount: userprovider.chatList.length,
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    //    reverse: true,
+                    padding: EdgeInsets.only(
+                      bottom: 80.h,
+                      left: 16.w,
+                      right: 16.w,
+                    ),
+                    child: Builder(builder: (context) {
+                      return ListView.builder(
+                        itemCount: userprovider.chatList.length,
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          var message = userprovider.chatList[index];
+                          bool isSender = message.senderId == senderId;
 
-                    itemBuilder: (context, index) {
-                      var item = userprovider.chatList[index];
-                      log('userprofile response======>>>>>>$item');
-                      if (index.isEven || index.isOdd) {
-                        return ChatBubble(
-                          elevation: 0,
-                          clipper: ChatBubbleClipper5(
-                            type: BubbleType.receiverBubble,
-                          ),
-                          backGroundColor: const Color(0xff323232),
-                          margin: const EdgeInsets.only(top: 20),
-                          child: Container(
-                            constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.65,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  constraints: BoxConstraints(
-                                    maxWidth:
-                                        MediaQuery.of(context).size.width * 0.5,
-                                  ),
-                                  child: Text(
-                                    item.message ?? '',
-                                    style: GoogleFonts.inter(
-                                      color: Colors.white,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w400,
-                                    ),
+                          return Align(
+                            alignment: isSender
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                top: 20.h,
+                                left: isSender ? 210.w : 0,
+                                right: isSender ? 0 : 100.w,
+                              ),
+                              // constraints: BoxConstraints(
+                              //   maxWidth:
+                              //       MediaQuery.of(context).size.width * 0.65,
+                              // ),
+                              child: ChatBubble(
+                                elevation: 0,
+                                clipper: ChatBubbleClipper5(
+                                  type: isSender
+                                      ? BubbleType.sendBubble
+                                      : BubbleType.receiverBubble,
+                                ),
+                                backGroundColor:
+                                    isSender ? Colors.white : primary,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        message.message ?? '',
+                                        style: TextStyle(
+                                          color:
+                                              isSender ? primary : Colors.white,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        _extractTime(message.datetime) ?? '',
+                                        style: TextStyle(
+                                          color:
+                                              isSender ? primary : Colors.white,
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                Text(item.datetime ?? '',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.white,
-                                      // color: const Color(0xff7C7C7C))
-                                    ))
-                              ],
+                              ),
                             ),
-                          ),
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  ),
-                ),
+                          );
+                        },
+                      );
+                    })),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
@@ -331,9 +270,9 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                           builder: (context, value, child) {
                             return InkWell(
                               onTap: () {
-                                log('senderID==${senderId}');
-                                log('receiverID==${receiverId1}');
-                                log('response=====>>>>>$receiverId1');
+                                log('senderID==$senderId');
+                                log('receiverID==$receiverId1');
+                                // log('response=====>>>>>$receiverId1');
                                 //var item = value.userProfile;
                                 onChatAdd(
                                     receiverId: widget.receiverId.toString(),
@@ -381,8 +320,7 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
     log('senderID response Api====>>>$senderId');
     // log('onchatAdd response======================>>>>>>>>>>>>>>>>>>>>>>>>$data');
     pro.addChat(context: context, data: data).then((value) {});
-    setState(() {
-      textcontroller.clear();
-    });
+    textcontroller.clear();
+    setState(() {});
   }
 }

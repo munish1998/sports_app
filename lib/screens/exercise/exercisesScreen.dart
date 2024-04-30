@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/providers/challengesProvider.dart';
-import 'package:touchmaster/screens/exercise/exercisechallengeScreen.dart';
 
 import '../../utils/constant.dart';
 import '/app_image.dart';
@@ -19,16 +18,16 @@ import '/utils/commonMethod.dart';
 import '/utils/size_extension.dart';
 import 'exercisePlayerScreen.dart';
 
-class ExercisesScreen1 extends StatefulWidget {
+class ExercisesScreen extends StatefulWidget {
   final LevelModel? levelItem;
 
-  const ExercisesScreen1({super.key, this.levelItem});
+  const ExercisesScreen({super.key, this.levelItem});
 
   @override
-  State<ExercisesScreen1> createState() => _ExercisesScreen1State();
+  State<ExercisesScreen> createState() => _ExercisesScreenState();
 }
 
-class _ExercisesScreen1State extends State<ExercisesScreen1> {
+class _ExercisesScreenState extends State<ExercisesScreen> {
   SharedPreferences? pref;
 
   @override
@@ -170,15 +169,25 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
                       SizedBox(
                         height: 20,
                       ),
+                      Text(
+                        widget.levelItem!.description,
+                        style: GoogleFonts.lato(
+                            color: const Color(0xffFFFFFF).withOpacity(0.5),
+                            fontSize: 13.sp),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
                       ListView.separated(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: data.exerciseList.length,
                         itemBuilder: (context, index) {
                           var item = data.exerciseList[index];
-                          return exerciseItem(
-                            item,
-                          );
+                          return exerciseItem(item);
                         },
                         separatorBuilder: (context, index) {
                           return SizedBox(
@@ -197,30 +206,15 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
     );
   }
 
-  Widget exerciseItem(
-    ExerciseModel item,
-  ) =>
-      Container(
+  Widget exerciseItem(ExerciseModel item) => Container(
         child: InkWell(
           onTap: () async {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ExercisesScreen1(
-                          levelItem: widget.levelItem!,
-                        )));
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (context) => ExercisesScreen1(
-            //               levelItem: item1,
-            //             )));
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => ExerciseContentScreen(exercise: item),
-            //   ),
-            // );
+              context,
+              MaterialPageRoute(
+                builder: (context) => ExerciseContentScreen(exercise: item),
+              ),
+            );
           },
           child: Container(
             padding: EdgeInsets.symmetric(
@@ -286,106 +280,6 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
   void challengeDialog(
       {required BuildContext context, required String exerciseId}) {
     showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(builder: (context, setState) {
-          return Consumer<UsersProvider>(builder: (context, data, child) {
-            return Container(
-              height: 250,
-              margin: EdgeInsets.symmetric(horizontal: 20) +
-                  EdgeInsets.only(top: 300, bottom: 100),
-              decoration: BoxDecoration(
-                color: Color(0xff323232),
-                borderRadius: BorderRadius.circular(19),
-              ),
-              child: Scaffold(
-                backgroundColor: Colors.transparent,
-                body: Stack(
-                  children: [
-                    // bottom image
-                    ListView.separated(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      padding: EdgeInsets.all(16),
-                      itemCount: data.usersFollowList.length,
-                      itemBuilder: (context, index) {
-                        var item = data.usersFollowList[index];
-                        return Container(
-                          child: Row(
-                            children: [
-                              cacheImages(
-                                image: item.profilePicture,
-                                radius: 50,
-                                height: 45,
-                                width: 45,
-                              ),
-                              SizedBox(width: 30),
-                              Text(
-                                item.name,
-                                style: GoogleFonts.poppins(
-                                  color: white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Spacer(),
-                              InkWell(
-                                onTap: () {
-                                  onChallenge(
-                                      challengeId: item.userId,
-                                      exerciseId: exerciseId);
-                                  // Update button color to pink after challenge is sent
-                                  data.updateChallengeButtonColor(
-                                      item.userId, Colors.pink);
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 10),
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      tileMode: TileMode.clamp,
-                                      colors: [
-                                        Color(0xff02B660),
-                                        Color(0xff51CDE2),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(6),
-                                    color:
-                                        data.challengeButtonColors[item.userId],
-                                  ),
-                                  child: Text(
-                                    "Challenge",
-                                    style: GoogleFonts.mulish(
-                                      color: white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return SizedBox(height: 15, child: Divider());
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            );
-          });
-        });
-      },
-    );
-  }
-
-  void challengeDialog1(
-      {required BuildContext context, required String exerciseId}) {
-    showDialog(
         context: context,
         builder: (context) {
           return StatefulBuilder(builder: (context, _) {
@@ -410,7 +304,6 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
                         itemBuilder: (context, index) {
                           var item = data.usersFollowList[index];
                           return Container(
-                            // color: Colors.black,
                             child: Row(
                               children: [
                                 cacheImages(
@@ -445,13 +338,7 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                        gradient: const LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            tileMode: TileMode.clamp,
-                                            colors: [
-                                              Color(0xff02B660),
-                                              Color(0xff51CDE2),
-                                            ]),
+                                        color: grey,
                                         borderRadius: BorderRadius.circular(6)),
                                     child: Text(
                                       "Challenge",
@@ -498,8 +385,6 @@ class _ExercisesScreen1State extends State<ExercisesScreen1> {
         navPop(context: context);
       }
       commonAlert(context, pro.msg);
-      log('chalengeresponsestatus=====>>>>>>>>>>>>>>>>>>>>>>>>${data}');
-      log('challengeresponselist=======>>>>>>${pro.challengeList}');
       log('ChaleengeData --------${pro.msg}    ${pro.isChallenged}');
     });
   }

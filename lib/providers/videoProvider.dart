@@ -198,7 +198,7 @@ class VideoProvider with ChangeNotifier {
 
   Future<void> videoStatics(
       {required BuildContext context, required Map data}) async {
-    var url = Uri.parse(Apis.updateVideoStatics);
+    var url = Uri.parse(Apis.addChat);
 
     // debugPrint('Data-==>  $url');
     // showLoaderDialog(context, 'Please wait...');

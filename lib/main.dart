@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:touchmaster/screens/connection/messageConnection.dart';
 
 import 'providers/allProviders.dart';
 import 'screens/splash/splash.dart';
@@ -70,21 +71,21 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: AllProviders().allProvider,
       child: MaterialApp(
-        title: 'Touch Master',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.deepPurple,
+          title: 'Touch Master',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.deepPurple,
+            ),
+            appBarTheme: AppBarTheme(
+                backgroundColor: Colors.black,
+                iconTheme: IconThemeData(color: Colors.white)),
+            // scaffoldBackgroundColor: Colors.black,
+            useMaterial3: true,
           ),
-          appBarTheme: AppBarTheme(
-              backgroundColor: Colors.black,
-              iconTheme: IconThemeData(color: Colors.white)),
-          // scaffoldBackgroundColor: Colors.black,
-          useMaterial3: true,
-        ),
-        home: SplashScreen(),
-        // home: ExampleScreen(),
-      ),
+          home: SplashScreen()
+          // home: ExampleScreen(),
+          ),
     );
   }
 }

@@ -214,7 +214,8 @@ class _RecordChPreviewScreenState extends State<RecordChPreviewScreen> {
                 InkWell(
                   onTap: () {
                     onPending(widget.challengeId, 'attempt');
-                    log('onpending response======>>>>>>>$onPending(challengeId, status)');
+                    //  onPending(widget.challengeId, 'pending');
+                    // log('onpending response======>>>>>>>$onPending(challengeId, status)');
                     // var data = onPending(widget.challengeId, 'attempt');
                     // log('senderID of challenges=====>>>>>>$data');
                     // log('challenge status details ========>>>>>>>>$data');
@@ -236,6 +237,34 @@ class _RecordChPreviewScreenState extends State<RecordChPreviewScreen> {
         ),
       );
   Future<void> onPending(
+    String challengeId,
+    String status,
+  ) async {
+    var pro = Provider.of<ChallengeProvider>(context, listen: false);
+//var senderUserId = preferences!.getString(userIdKey).toString();
+    var data = {
+      'user_id': preferences!.getString(userIdKey).toString(),
+      'challenge_id': challengeId,
+      'status': 'attempt',
+    };
+    //log('print sender user id =======>>>>>>>>$');
+    log('challenges update data response=====>>>>>>>>>$data');
+
+    try {
+      await pro.updateChallengeStatus(
+        context: context,
+        data: data,
+      );
+      customToast(context: context, msg: 'Challenge status updated', type: 1);
+    } catch (error) {
+      log('Error while updating challenge status: $error');
+
+      customToast(
+          context: context, msg: 'Failed to update challenge status', type: 0);
+    }
+  }
+
+  Future<void> approve(
     String challengeId,
     String status,
   ) async {

@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/screens/exercise/exercisechallengeScreen.dart';
-
+import 'package:touchmaster/screens/exercise/exercisesScreen.dart';
 import '../../app_image.dart';
 import '../../model/levelModel.dart';
 import '../../utils/color.dart';
@@ -11,7 +11,6 @@ import '/common/cacheImage.dart';
 import '/providers/levelProvider.dart';
 import '/utils/commonMethod.dart';
 import '/utils/constant.dart';
-import 'exercisesScreen.dart';
 
 class LevelScreen extends StatefulWidget {
   const LevelScreen({
@@ -241,8 +240,7 @@ class _LevelScreenState extends State<LevelScreen> {
             pro.getExercises(context: context, data: data).then((value) {
               if (pro.isExercise) {
                 navPush(
-                    context: context,
-                    action: ExercisesScreen1 (levelItem: item));
+                    context: context, action: ExercisesScreen(levelItem: item));
               }
             });
           },

@@ -24,16 +24,14 @@ class ChallengeProvider with ChangeNotifier {
 
   List<ChallengeModel> get challengeList => _challengeList;
 
-  Future<void> getChallenges1(
+  Future<void> getChallenges(
       {required BuildContext context, required Map data}) async {
     var url = Uri.parse(Apis.getChallenges);
     // debugPrint('Data-==>  $url');
     // showLoaderDialog(context, 'Please wait...');
     final response = await ApiClient()
         .postDataByToken(context: context, url: url, body: data);
-    // log('list of challenges of users=======>>>>>>$response');
-    // log('list of challenges=====>>>>>>>>>$data');
-    // log('Response--------->>>  ${response.body}');
+    log('Response--------->>>  ${response.body}');
     var result = jsonDecode(response.body);
     // navPop(context: context);
     if (response.statusCode == 200) {

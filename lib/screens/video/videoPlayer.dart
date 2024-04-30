@@ -390,7 +390,7 @@ class _OptionsScreenState extends State<OptionsScreen> {
                   ),
                   SizedBox(width: 10),
                   InkWell(
-                    onTap: onShare,
+                    // onTap: onShare,
                     child: Transform(
                       transform: Matrix4.rotationZ(5.8),
                       child: Icon(
@@ -407,6 +407,7 @@ class _OptionsScreenState extends State<OptionsScreen> {
                       color: white,
                     ),
                   ),
+                  SizedBox(width: 10),
                 ],
               ),
               Column(
@@ -420,7 +421,6 @@ class _OptionsScreenState extends State<OptionsScreen> {
                     '${widget.item.totalComments} Comments',
                     style: TextStyle(color: white),
                   ),
-                  // Icon(Icons.more_vert,color: white,),
                 ],
               ),
             ],
@@ -566,6 +566,17 @@ class _OptionsScreenState extends State<OptionsScreen> {
       'user_id': pref!.getString(userIdKey).toString() ?? '',
       'video_id': widget.item.videoId,
       'status': like ? 'likes' : 'unlike',
+    };
+    log('CommentData-------------->>  $data');
+    pro.videoStatics(context: context, data: data).then((value) {});
+  }
+
+  Future<void> onView() async {
+    var pro = Provider.of<VideoProvider>(context, listen: false);
+    var data = {
+      'user_id': pref!.getString(userIdKey).toString() ?? '',
+      'video_id': widget.item.videoId,
+      'status': 'views',
     };
     log('CommentData-------------->>  $data');
     pro.videoStatics(context: context, data: data).then((value) {});

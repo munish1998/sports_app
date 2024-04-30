@@ -1,55 +1,55 @@
+// // // class ChallengeModel {
+// // //   String title;
+// // //   List<ItemModel> itemList;
+// // //
+// // //   ChallengeModel({
+// // //     required this.title,
+// // //     required this.itemList,
+// // //   });
+// // //   factory ChallengeModel.fromJson(Map<String, dynamic>json){
+// // //
+// // //     return ChallengeModel(title: 'title', itemList: []);
+// // //   }
+// // // }
+
 // // class ChallengeModel {
+// //   String id;
 // //   String title;
-// //   List<ItemModel> itemList;
-// //
+// //   String dateTime;
+// //   String status;
+// //   String videoId;
+// //   String thumbnail;
+// //   String video;
+
 // //   ChallengeModel({
+// //     required this.id,
 // //     required this.title,
-// //     required this.itemList,
+// //     required this.dateTime,
+// //     required this.status,
+// //     required this.videoId,
+// //     required this.thumbnail,
+// //     required this.video,
 // //   });
-// //   factory ChallengeModel.fromJson(Map<String, dynamic>json){
-// //
-// //     return ChallengeModel(title: 'title', itemList: []);
-// //   }
+
+// //   factory ChallengeModel.fromJson(Map<String, dynamic> json) => ChallengeModel(
+// //       id: json['id'],
+// //       title: json['title'],
+// //       dateTime: json['datetime'] ?? '',
+// //       status: json['status'] ?? '',
+// //       videoId: json['video_id'] ?? '',
+// //       thumbnail: json['thumbnail'] ?? '',
+// //       video: json['video'] ?? '');
 // // }
 
-// class ChallengeModel {
-//   String id;
-//   String title;
-//   String dateTime;
-//   String status;
-//   String videoId;
-//   String thumbnail;
-//   String video;
-
-//   ChallengeModel({
-//     required this.id,
-//     required this.title,
-//     required this.dateTime,
-//     required this.status,
-//     required this.videoId,
-//     required this.thumbnail,
-//     required this.video,
-//   });
-
-//   factory ChallengeModel.fromJson(Map<String, dynamic> json) => ChallengeModel(
-//       id: json['id'],
-//       title: json['title'],
-//       dateTime: json['datetime'] ?? '',
-//       status: json['status'] ?? '',
-//       videoId: json['video_id'] ?? '',
-//       thumbnail: json['thumbnail'] ?? '',
-//       video: json['video'] ?? '');
-// }
-
-// /*{
-//             "id": "4",
-//             "title": "New Challenge",
-//             "datetime": "15-02-2024 21:43",
-//             "status": "pending",
-//             "video_id": null,
-//             "thumbnail": "",
-//             "video": ""
-//         }*/
+// // /*{
+// //             "id": "4",
+// //             "title": "New Challenge",
+// //             "datetime": "15-02-2024 21:43",
+// //             "status": "pending",
+// //             "video_id": null,
+// //             "thumbnail": "",
+// //             "video": ""
+// //         }*/
 
 class ChallengeModel {
   String? id;
@@ -88,3 +88,32 @@ class ChallengeModel {
     action = json['action'];
   }
 }
+
+// class ChallengeModel {
+//   String id;
+//   String title;
+//   String dateTime;
+//   String status;
+//   String videoId;
+//   String thumbnail;
+//   String video;
+
+//   ChallengeModel({
+//     required this.id,
+//     required this.title,
+//     required this.dateTime,
+//     required this.status,
+//     required this.videoId,
+//     required this.thumbnail,
+//     required this.video,
+//   });
+
+//   factory ChallengeModel.fromJson(Map<String, dynamic> json) => ChallengeModel(
+//       id: json['id'],
+//       title: json['title'],
+//       dateTime: json['datetime'] ?? '',
+//       status: json['status'] ?? '',
+//       videoId: json['video_id'] ?? '',
+//       thumbnail: json['thumbnail'] ?? '',
+//       video: json['video'] ?? '');
+// }

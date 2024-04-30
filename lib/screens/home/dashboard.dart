@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/providers/contactUsProvider.dart';
 import 'package:touchmaster/providers/homeProvider.dart';
+import 'package:touchmaster/screens/message/inboxMessage.dart';
 
 import '../../common/app_drawer.dart';
 import '../../providers/leaderboardProvider.dart';
@@ -84,7 +85,7 @@ class _DashboardScreenState extends State<DashboardScreen>
           actions: [
             InkWell(
               onTap: () {
-                navPush(context: context, action: MessageScreen());
+                navPush(context: context, action: InboxMessageScreen());
               },
               child: Icon(
                 Icons.mark_unread_chat_alt_outlined,

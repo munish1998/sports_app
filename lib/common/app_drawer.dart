@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:touchmaster/screens/account/profile1.dart';
-
+import 'package:touchmaster/screens/connection/messageConnection.dart';
 import '../app_image.dart';
 import '../providers/authProvider.dart';
 import '../providers/contentProvider.dart';
@@ -54,6 +52,19 @@ class _AppDrawerState extends State<AppDrawer> {
               child: _listContent(
                 icon: "assets/ic_profile.svg",
                 name: "My Account",
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MessageConnectionsScreen()),
+                );
+              },
+              child: _listContent(
+                icon: "assets/ic_trophy.svg",
+                name: "My Connections",
               ),
             ),
             InkWell(
@@ -169,17 +180,17 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
             ),
             const Spacer(),
-            Padding(
-              padding: EdgeInsets.only(bottom: 20),
-              child: Text(
-                "V 1.0.7 - Build: 10",
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            )
+            // Padding(
+            //   padding: EdgeInsets.only(bottom: 20),
+            //   child: Text(
+            //     "V 1.0.7 - Build: 10",
+            //     style: GoogleFonts.poppins(
+            //       color: Colors.white,
+            //       fontSize: 14,
+            //       fontWeight: FontWeight.w500,
+            //     ),
+            //   ),
+            // )
           ],
         );
       }),
