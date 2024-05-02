@@ -61,6 +61,8 @@ class ChallengeModel {
   String? video;
   String? senderName;
   String? senderUserId;
+  String? reciverName;
+  String? reciverUserId;
   String? action;
 
   ChallengeModel(
@@ -73,6 +75,8 @@ class ChallengeModel {
       this.video,
       this.senderName,
       this.senderUserId,
+      this.reciverName,
+      this.reciverUserId,
       this.action});
 
   ChallengeModel.fromJson(Map<String, dynamic> json) {

@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/main.dart';
 import 'package:touchmaster/providers/challengesProvider.dart';
+import 'package:touchmaster/screens/challenges/challengeScreen.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 
@@ -214,11 +215,10 @@ class _RecordChPreviewScreenState extends State<RecordChPreviewScreen> {
                 InkWell(
                   onTap: () {
                     onPending(widget.challengeId, 'attempt');
-                    //  onPending(widget.challengeId, 'pending');
-                    // log('onpending response======>>>>>>>$onPending(challengeId, status)');
-                    // var data = onPending(widget.challengeId, 'attempt');
-                    // log('senderID of challenges=====>>>>>>$data');
-                    // log('challenge status details ========>>>>>>>>$data');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ChallengeScreen()));
                   },
 
                   // onTap: onShare,

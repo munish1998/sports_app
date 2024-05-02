@@ -132,7 +132,7 @@ class ChallengeProvider with ChangeNotifier {
       final response = await ApiClient()
           .postDataByToken(context: context, url: url, body: data);
       log('response of update challenge status is =====>>>>>>>>$response');
-      log('Response--Video------->>>  ${response.body}');
+      // log('Response--Video------->>>  ${response.body}');
 
       var result = jsonDecode(response.body);
 
