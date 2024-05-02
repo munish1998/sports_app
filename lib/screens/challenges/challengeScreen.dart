@@ -36,6 +36,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   @override
   void initState() {
     // TODO: implement initState
+
     super.initState();
     // initializePlayer();
     initFun();
@@ -55,18 +56,20 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
 
   Future<bool> initializePlayer(String video) async {
     showLoaderDialog(context, 'Loading...');
-    _vController = VideoPlayerController.networkUrl(Uri.parse(video));
+    _vController = VideoPlayerController.networkUrl(Uri.parse(video))
+      ..initialize().then((value) async {
+        await Future.wait([_vController!.initialize()]);
+        _chewController = ChewieController(
+          videoPlayerController: _vController!,
+          autoPlay: false,
+          showControls: false,
+          looping: false,
+        );
+        setState(() {});
+      });
     log('video response ====>>>>$video');
     log('_vcontroller response====>>>>$_vController');
-    await Future.wait([_vController!.initialize()]);
-    _chewController = ChewieController(
-      videoPlayerController: _vController!,
-      autoPlay: false,
-      showControls: false,
-      looping: false,
-    );
 
-    setState(() {});
     navPop(context: context);
     return _vController!.value.isInitialized;
   }
@@ -224,7 +227,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                     (item.status == 'pending' && item.action == 'receive')
                         ? attemptBTN(item.video!, item.id!, item.thumbnail!)
                         : (item.status == 'attempt' && item.action == 'sent')
-                            ? approvedBTN(item.id!)
+                            ? approvedBTN(item.id.toString())
                             : (item.status == 'decline' &&
                                     item.senderUserId != widget.userId)
                                 ? reAttendBTN(
@@ -279,16 +282,6 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
           ],
         ),
       );
-  Widget approvedButtonWithStatus(ChallengeModel item, String challengeId) {
-    if (item.status == 'receive' && item.senderUserId == item.reciverUserId) {
-      return approvedBTN(challengeId);
-    } else {
-      return Text(
-        'attempted',
-        style: TextStyle(color: Colors.white),
-      ); // or any other widget you want to display
-    }
-  }
 
   Widget attemptBTN(String video, String challengeId, String thumb) =>
       Container(
@@ -347,70 +340,6 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
         ),
       );
 
-  // Widget attempted(String video, String challengeId, String thumb) => Container(
-  //       child: Row(
-  //         mainAxisAlignment: MainAxisAlignment.end,
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           Container(
-  //             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-  //             alignment: Alignment.center,
-  //             decoration: BoxDecoration(
-  //                 gradient: cancel, borderRadius: BorderRadius.circular(8)),
-  //             child: Row(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 Icon(
-  //                   Icons.cancel_presentation,
-  //                   color: white,
-  //                   size: 18,
-  //                 ),
-  //                 SizedBox(
-  //                   width: 3,
-  //                 ),
-  //                 Text(
-  //                   'Cancel',
-  //                   style: TextStyle(color: white, fontSize: 12),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //           SizedBox(
-  //             width: 10,
-  //           ),
-  //           InkWell(
-  //             onTap: () {
-  //               initializePlayer(video).then((value) {
-  //                 attemptAlert(
-  //                     context: context, challengeId: challengeId, thumb: thumb);
-
-  //                 log('response of pending challenge ====>>>>$video');
-  //                 log('response of pending challenge ====>>>>$thumb');
-  //               });
-  //             },
-  //             child: Container(
-  //               padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-  //               alignment: Alignment.center,
-  //               decoration: BoxDecoration(
-  //                   gradient: attempt, borderRadius: BorderRadius.circular(8)),
-  //               child: Text(
-  //                 'attempted',
-  //                 style: TextStyle(color: white),
-  //               ),
-  //             ),
-  //           )
-  //         ],
-  //       ),
-  //     );
-
-  Widget approvedButtonWithStatus1(String status, String challengeId) {
-    if (status == 'receive') {
-      return approvedBTN(challengeId);
-    } else {
-      return CircularProgressIndicator(); // or any other widget you want to display
-    }
-  }
-
   Widget approvedBTN(String challengeId) => Container(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -418,6 +347,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
           children: [
             InkWell(
               onTap: () {
+                print("challengeId:-> ${challengeId.toString()}");
                 approveAlert(context: context, challengeId: challengeId);
               },
               child: Container(

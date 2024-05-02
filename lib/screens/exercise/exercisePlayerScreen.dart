@@ -21,7 +21,7 @@ class ExercisePlayerScreen extends StatefulWidget {
 }
 
 class _ExercisePlayerScreenState extends State<ExercisePlayerScreen> {
-  final List<String> videos = [
+  final List<String> videos1 = [
     'https://assets.mixkit.co/videos/preview/mixkit-taking-photos-from-different-angles-of-a-model-34421-large.mp4',
     'https://assets.mixkit.co/videos/preview/mixkit-young-mother-with-her-little-daughter-decorating-a-christmas-tree-39745-large.mp4',
     'https://assets.mixkit.co/videos/preview/mixkit-mother-with-her-little-daughter-eating-a-marshmallow-in-nature-39764-large.mp4',
