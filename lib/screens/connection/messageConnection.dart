@@ -181,13 +181,13 @@ class _MessageConnectionsScreenState extends State<MessageConnectionsScreen> {
                             Spacer(),
                             InkWell(
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => OpenMessageScreen(
-                                            senderId: item.userId,
-                                          )),
-                                );
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //       builder: (context) => OpenMessageScreen(
+                                //             senderId: item.userId,
+                                //           )),
+                                // );
                               },
                               child: Container(
                                 padding: EdgeInsets.symmetric(

@@ -31,16 +31,16 @@
 //     initFun();
 //   }
 
-//   initFun() async {
-//     var pro = Provider.of<MessageProvider>(context, listen: false);
+  // initFun() async {
+  //   var pro = Provider.of<MessageProvider>(context, listen: false);
 
-//     pref = await SharedPreferences.getInstance();
-//     var data = {
-//       'user_id': pref!.getString(userIdKey) ?? '',
-//     };
-//     log('response of get chat====---===----$data');
-//     pro.getChat(context: context, data: data);
-//   }
+  //   pref = await SharedPreferences.getInstance();
+  //   var data = {
+  //     'user_id': pref!.getString(userIdKey) ?? '',
+  //   };
+  //   log('response of get chat====---===----$data');
+  //   pro.getChat(context: context, data: data);
+  // }
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -104,16 +104,16 @@
 //                             // log('rceiverId======>>>>>>$item');
 //                             // log('receiverId response=====>>>>>${item.receiverId}');
 //                             // log('senderId response======>>>>>>${item.senderId}');
-//                             navPush(
-//                               context: context,
-//                               action: OpenMessageScreen(
-//                                 receiverId: item.receiverId.toString() ==
-//                                         pref!.getString(userIdKey).toString()
-//                                     ? item.senderId.toString()
-//                                     : item.receiverId.toString(),
-//                                 senderId: item.senderId.toString(),
-//                               ),
-//                             );
+//                             // navPush(
+//                             //   context: context,
+//                             //   action: OpenMessageScreen(
+//                             //     receiverId: item.receiverId.toString() ==
+//                             //             pref!.getString(userIdKey).toString()
+//                             //         ? item.senderId.toString()
+//                             //         : item.receiverId.toString(),
+//                             //     senderId: item.senderId.toString(),
+//                             //   ),
+//                             // );
 //                           },
 //                           child: Row(
 //                             mainAxisAlignment: MainAxisAlignment.start,

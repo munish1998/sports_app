@@ -23,8 +23,9 @@ class InboxMessageScreen extends StatefulWidget {
 }
 
 class _InboxMessageScreenState extends State<InboxMessageScreen> {
-  SharedPreferences? pref;
-
+  late SharedPreferences pref;
+  late String rceiverId;
+  //String userID = pref!.getString(userIdKey) ?? '';
   @override
   void initState() {
     super.initState();
@@ -35,10 +36,9 @@ class _InboxMessageScreenState extends State<InboxMessageScreen> {
     var pro = Provider.of<MessageProvider>(context, listen: false);
 
     pref = await SharedPreferences.getInstance();
-    var data = {
-      'user_id': pref!.getString(userIdKey) ?? '',
-    };
-    log('userId response===>>>$pro');
+    rceiverId = pref!.getString(userIdKey) ?? '';
+    var data = {'user_id': rceiverId};
+    log('userId response===>>>$rceiverId');
     log('response of get chat====---===----$data');
     pro.getChatInbox(context: context, data: data);
   }
@@ -102,21 +102,30 @@ class _InboxMessageScreenState extends State<InboxMessageScreen> {
                         var item = data.inboxList[index];
                         return InkWell(
                           onTap: () {
-                            log('response of chstinbox list ====>>>$item');
-                            // navPush(context: context, action: OpenMessageScreen(receiverId:item.userId==item.userId.toString()?item.userId:))
-                            // log('rceiverId======>>>>>>$item');
-                            // log('receiverId response=====>>>>>${item.receiverId}');
-                            // log('senderId response======>>>>>>${item.senderId}');
+                            //  log('currentuserId===>>>$')
+                            navPush(
+                              context: context,
+                              action: OpenMessageScreen(
+                                receiverId: rceiverId == item.userId
+                                    ? item.userId
+                                    : rceiverId,
+                                senderId: item.userId!,
+                                currentuserId: rceiverId,
+                                senderName: item.userName.toString(),
+                                receiverName: '',
+                              ),
+                            );
+                            // //  OpenMessageScreen(senderId: );
+                            // log('senderID===>>>${item.userId}');
+                            // log('response of receiverId===>>>$item');
+                            // log('response of chstinbox list ====>>>$item');
+                            // // log('userId===>>>$userId');
                             // navPush(
-                            //   context: context,
-                            //   action: OpenMessageScreen(
-                            //     receiverId: item.receiverId.toString() ==
-                            //             pref!.getString(userIdKey).toString()
-                            //         ? item.senderId.toString()
-                            //         : item.receiverId.toString(),
-                            //     senderId: item.senderId.toString(),
-                            //   ),
-                            // );
+                            //     context: context,
+                            //     action: OpenMessageScreen(
+                            //       senderId: item.userId!,
+                            //       receiverId: rceiverId,
+                            //     ));
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,

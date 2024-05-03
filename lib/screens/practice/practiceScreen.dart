@@ -1,7 +1,10 @@
+import 'dart:collection';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:touchmaster/model/practiceModel.dart';
 import 'package:touchmaster/utils/commonMethod.dart';
 
 import '../../utils/color.dart';
@@ -21,7 +24,7 @@ class PracticeScreen extends StatefulWidget {
 
 class _PracticeScreenState extends State<PracticeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
-
+  List<PracticeModel> practicelist = [];
   PageController pageController = PageController();
   int selectedIndex = 0;
   SharedPreferences? pref;
@@ -38,6 +41,16 @@ class _PracticeScreenState extends State<PracticeScreen> {
     pref = await SharedPreferences.getInstance();
     pro.reset();
     _getPractice();
+  }
+
+  _initFun1() async {
+    var pro = Provider.of<PracticeProvider>(context, listen: false);
+    pref = await SharedPreferences.getInstance();
+    pro.reset();
+
+    for (var practice in pro.practiceList) {
+      // _getPractice(practice); // Pass the PracticeModel directly
+    }
   }
 
   @override
@@ -105,7 +118,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               ),
               Center(
                 child: Text(
-                  "Learn and Practice",
+                  'Lear and Practice',
                   style: TextStyle(
                       letterSpacing: 2,
                       fontFamily: "BankGothic",
@@ -264,7 +277,19 @@ class _PracticeScreenState extends State<PracticeScreen> {
     var pro = Provider.of<PracticeProvider>(context, listen: false);
     var data = {
       'user_id': pref!.getString(userIdKey).toString() ?? '',
+      'category_id': ''
     };
+    log('response of getpractice====>>>>>>>$data');
+    pro.getPractices(context: context, data: data);
+  }
+
+  Future<void> _getPractice1(PracticeModel practice) async {
+    var pro = Provider.of<PracticeProvider>(context, listen: false);
+    var data = {
+      'user_id': pref!.getString(userIdKey).toString() ?? '',
+      'category_id': practice.categoryId,
+    };
+    log('response of getpractice====>>>>>>>$data');
     pro.getPractices(context: context, data: data);
   }
 }

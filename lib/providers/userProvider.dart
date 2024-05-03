@@ -56,7 +56,7 @@ class UsersProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getChat1({
+  Future<void> getChat5({
     required BuildContext context,
     required Map data,
   }) async {
