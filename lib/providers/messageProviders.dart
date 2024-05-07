@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/model/inboxMessageModel.dart';
 import 'package:touchmaster/model/mesageModel.dart';
+import 'package:touchmaster/model/notificationModel.dart';
 import 'package:touchmaster/providers/authProvider.dart';
 import 'package:touchmaster/service/apiConstant.dart';
 import 'package:touchmaster/service/apiService.dart';
@@ -20,6 +21,9 @@ class MessageProvider with ChangeNotifier {
   List<MessageInboxModel> get inboxList => _inboxList;
   List<MessageModel> _chatList = [];
   List<MessageModel> get chatList => _chatList;
+  List<NotificationModel> _notifyList = [];
+
+  List<NotificationModel> get notifyList => _notifyList;
 
   Future<void> getChatHistory({
     required BuildContext context,

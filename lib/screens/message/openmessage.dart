@@ -427,16 +427,14 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
     // Add the message to the chatList
     setState(() {
       messageProvider.chatList.add(MessageModel(
-        senderId: senderId,
-        receiverId: receiverId,
-        message: message,
-        datetime: DateTime.now()
-            .toString(), // Assuming the current timestamp for the new message
-      ));
+          senderId: senderId,
+          receiverId: receiverId,
+          message: message,
+          datetime: DateTime.now().toString()));
     });
   }
 
-  Future<void> onChatAdd({
+  Future<void> onChatAdd1({
     required String receiverId,
     required String message,
     required String senderId,
@@ -461,11 +459,56 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
     log('senderID response Api====>>>$actualSenderId');
     pro.addChat(context: context, data: data).then((value) {
       // Add the new message to the chat list
+    });
+
+    // Clear the text input field after sending the message
+    textcontroller.clear();
+  }
+
+  Future<void> onChatAdd({
+    required String receiverId,
+    required String message,
+    required String senderId,
+    MessageProvider? messageprovider,
+  }) async {
+    var pro = Provider.of<MessageProvider>(context, listen: false);
+    while (pref == null) {
+      await Future.delayed(
+          Duration(milliseconds: 100)); // Adjust delay as needed
+    }
+    var actualSenderId = pref!.getString(userIdKey) ?? '';
+    if (actualSenderId.isEmpty) {
+      throw Exception('Sender ID is empty');
+    }
+
+    var data = {
+      'sender_id': actualSenderId,
+      'receiver_id': receiverId,
+      'message': message,
+    };
+
+    pro.addChat(context: context, data: data).then((value) {
       setState(() {
-        // Assuming the new message is returned in the response
-        // Update the chat list with the new message
-        // You may need to adjust this based on how the response is structured
+        messageprovider!.chatList.insert(
+          messageprovider.chatList.length - 1,
+          MessageModel(
+            senderId: actualSenderId,
+            receiverId: receiverId,
+            message: message,
+            datetime: DateTime.now().toString(),
+          ),
+        );
+        //  log('messagemodel response====>>>$')
       });
+
+      // Scroll to the bottom of the list to show the new message
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }).catchError((error) {
+      print('Error sending message: $error');
     });
 
     // Clear the text input field after sending the message

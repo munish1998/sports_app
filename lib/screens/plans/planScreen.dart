@@ -1,7 +1,9 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:touchmaster/screens/plans/paymentScreen.dart';
 
 import '../../utils/color.dart';
 import '/app_image.dart';
@@ -281,12 +283,20 @@ class _PlansScreenState extends State<PlansScreen> {
                 ),
               ),
               child: Center(
-                child: Text(
-                  "Subscribe Now",
-                  style: GoogleFonts.mulish(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PaymentScreen()));
+                  },
+                  child: Text(
+                    "Subscribe Now",
+                    style: GoogleFonts.mulish(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),

@@ -58,6 +58,8 @@ class MessagingService {
     _token = await _firebaseMessaging.getToken();
 
     log("FCM: $_token");
+    log('fcm token key =====>>>>>$_token');
+    log('fcm refresh token key===>>>>>$token');
 
     _firebaseMessaging.onTokenRefresh.listen((token) {
       _token = token;
@@ -78,12 +80,17 @@ class MessagingService {
 
   void _registerForegroundMessageHandler() {
     FirebaseMessaging.onMessage.listen((remoteMessage) async {
-      log(" --- foreground message received ---");
-      log('${remoteMessage.data['title']}');
-      // log('${remoteMessage.notification!.body}');
+      log(" --- foreground message received ---$_token");
+      // log('notification title${remoteMessage.data['title']}');
+      //  log('notification title====>>>>${remoteMessage.data['title']}');
+      log('notifiction title response===>>>>>>>>>>>>>${remoteMessage.notification!.title}');
+      log('body response===>>>>${remoteMessage.notification!.body}');
+      log('chat message response ====>>>${remoteMessage.notification!.android}');
+      log('messageID response>>>====${remoteMessage.messageId}');
       await showTextNotification('${remoteMessage.data['title']}',
           '${remoteMessage.data['body']}', '#0909');
     });
+    // log('chat message notification response====>>>>${}')
   }
 
   Future<void> showTextNotification(
