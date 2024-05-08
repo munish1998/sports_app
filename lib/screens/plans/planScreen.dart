@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:touchmaster/screens/plans/home.dart';
 import 'package:touchmaster/screens/plans/paymentScreen.dart';
+import 'package:touchmaster/screens/plans/stripe_payment_screen.dart';
 
 import '../../utils/color.dart';
 import '/app_image.dart';
@@ -285,10 +287,8 @@ class _PlansScreenState extends State<PlansScreen> {
               child: Center(
                 child: InkWell(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PaymentScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomePage()));
                   },
                   child: Text(
                     "Subscribe Now",
