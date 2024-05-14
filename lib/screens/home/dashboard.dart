@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,7 +31,8 @@ import '/utils/constant.dart';
 import '/utils/size_extension.dart'; // import '/utils/size_extension.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  PracticeCateModel? item;
+  DashboardScreen({super.key, this.item});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -242,6 +244,22 @@ class _DashboardScreenState extends State<DashboardScreen>
       return HomeScreen();
     } else if (page == 1) {
       return PracticeScreen();
+      // if (widget.item != null) {
+      //   PracticeModel practiceModel = PracticeModel(
+      //     id: '',
+      //     categoryId: '', title: '', description: '',
+      //     bgImage: '', video: '', durationType: '', duration: '',
+      //     // Set other properties of the PracticeModel if needed
+      //   );
+      //   return PracticeScreen(practiceModel: practiceModel);
+      // } else {
+      //   // Handle the case where widget.item is null
+      //   return Center(
+      //       child: Text(
+      //     'No data found',
+      //     style: TextStyle(color: Colors.white),
+      //   )); // or any other widget you want to return
+      // }
       // } else if (page == 2) {
       //   return RecordingScreen();
     } else if (page == 3) {
@@ -364,6 +382,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     var data = {
       'user_id': pref!.getString(userIdKey).toString() ?? '',
     };
+    log('user_id practice response====>>>$data');
     pro.getPracticeCategory(context: context, data: data);
   }
 

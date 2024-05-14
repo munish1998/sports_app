@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:touchmaster/common/app_colors.dart';
 import 'package:touchmaster/screens/connection/messageConnection.dart';
+import 'package:touchmaster/utils/color.dart';
 import '../app_image.dart';
 import '../providers/authProvider.dart';
 import '../providers/contentProvider.dart';
@@ -58,8 +60,7 @@ class _AppDrawerState extends State<AppDrawer> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const MessageConnectionsScreen()),
+                  MaterialPageRoute(builder: (context) => ConnectionsScreen1()),
                 );
               },
               child: _listContent(
@@ -202,27 +203,74 @@ class _AppDrawerState extends State<AppDrawer> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Warning!!!!'),
-          content: Text('Are you sure want to logout'),
-          actions: <Widget>[
-            InkWell(
-              onTap: () {
-                print("you choose no");
-                Navigator.of(context).pop(false);
-              },
-              child: Text('No'),
+          backgroundColor:
+              Colors.transparent, // Set background color to transparent
+          contentPadding: EdgeInsets.all(12), // Adjust content padding
+          content: Container(
+            height: 140,
+            alignment: Alignment.center, // Center align content
+            decoration: BoxDecoration(
+              color: Colors.black, // Set container color to green
+              borderRadius:
+                  BorderRadius.circular(8), // Optional: Add border radius
             ),
-            SizedBox(
-              width: 50,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Warning!!!!',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold), // Adjust font size
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Are you sure you want to logout?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 14, color: Colors.white), // Adjust font size
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        print("you chose no");
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: primaryColor,
+                        ), // Set button background color to white
+                        child: Text('No'),
+                      ),
+                    ),
+                    SizedBox(width: 24),
+                    InkWell(
+                      onTap: () {
+                        Provider.of<AuthProvider>(context, listen: false)
+                            .logout(context);
+                      },
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: primaryColor,
+                        ), // Set button background color to white
+                        child: Text('Yes'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            InkWell(
-              onTap: () {
-                Provider.of<AuthProvider>(context, listen: false)
-                    .logout(context);
-              },
-              child: Text('Yes'),
-            ),
-          ],
+          ),
         );
       },
     );

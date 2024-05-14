@@ -172,6 +172,7 @@ class MessageProvider with ChangeNotifier {
       if (result['code'] == 200) {
         if (result['chats'] != null && result['chats'] is List) {
           List<dynamic> chatMessages = result['chats'];
+          _chatList.clear();
           chatMessages.forEach((chat) {
             var msg = _chatList.add(MessageModel.fromJson(chat));
             log('message check===>>>${chatMessages}');

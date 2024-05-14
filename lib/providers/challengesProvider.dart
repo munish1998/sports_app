@@ -24,6 +24,11 @@ class ChallengeProvider with ChangeNotifier {
 
   List<ChallengeModel> get challengeList => _challengeList;
 
+  void removeChallenge(String challengeId) {
+    _challengeList.removeWhere((challenge) => challenge.id == challengeId);
+    notifyListeners();
+  }
+
   Future<void> getChallenges(
       {required BuildContext context, required Map data}) async {
     var url = Uri.parse(Apis.getChallenges);

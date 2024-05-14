@@ -18,6 +18,8 @@ class PracticeProvider with ChangeNotifier {
   List<PracticeCateModel> get practiceCate => _practiceCate;
 
   List<PracticeModel> _practiceList = [];
+  PracticeModel? _practiceModel;
+  PracticeModel? get practiceModel => _practiceModel;
 
   List<PracticeModel> get practiceList => _practiceList;
 

@@ -190,7 +190,10 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                                             : (item.status == 'decline' &&
                                                     item.action == 'receive')
                                                 ? '${item.senderName}declned your challenge'
-                                                : '',
+                                                : (item.status == 'cancel' &&
+                                                        item.action == 'sent')
+                                                    ? '${item.senderName} cancel your challenge'
+                                                    : '',
                     style: TextStyle(color: Colors.white),
                   ),
                   SizedBox(
@@ -289,27 +292,33 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
           mainAxisAlignment: MainAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  gradient: cancel, borderRadius: BorderRadius.circular(8)),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.cancel_presentation,
-                    color: white,
-                    size: 18,
-                  ),
-                  SizedBox(
-                    width: 3,
-                  ),
-                  Text(
-                    'Cancel',
-                    style: TextStyle(color: white, fontSize: 12),
-                  ),
-                ],
+            InkWell(
+              onTap: () {
+                Oncancel(challengeId, 'cancel');
+                log('challengeID response ===>>>>$challengeId');
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    gradient: cancel, borderRadius: BorderRadius.circular(8)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.cancel_presentation,
+                      color: white,
+                      size: 18,
+                    ),
+                    SizedBox(
+                      width: 3,
+                    ),
+                    Text(
+                      'Cancel',
+                      style: TextStyle(color: white, fontSize: 12),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(
@@ -377,14 +386,10 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
               onTap: () {
                 initializePlayer(video).then((value) {
                   if (value) {
-                    attemptAlert(
-                        context: context,
-                        challengeId: challengeId,
-                        thumb: thumb);
+                    decline(challengeId,
+                        'decline'); // Call decline function with challengeId
                   }
                 });
-                log('response of reattempt challenge====>>>>>$thumb');
-                log('response of chllengeId===>>$challengeId');
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
@@ -400,14 +405,19 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
             SizedBox(
               width: 10,
             ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  gradient: declined, borderRadius: BorderRadius.circular(8)),
-              child: Text(
-                'Declined',
-                style: TextStyle(color: white),
+            InkWell(
+              onTap: () {
+                Oncancel(challengeId, 'cancel');
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    gradient: declined, borderRadius: BorderRadius.circular(8)),
+                child: Text(
+                  'Declined',
+                  style: TextStyle(color: white),
+                ),
               ),
             )
           ],
@@ -806,6 +816,38 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
         context: context,
         data: data,
       );
+      //pro.removeChallenge(challengeId);
+      customToast(context: context, msg: 'Challenge decline updated', type: 1);
+      Navigator.pop(context);
+    } catch (error) {
+      log('Error while updating challenge status: $error');
+
+      customToast(
+          context: context, msg: 'Failed to update challenge status', type: 0);
+    }
+  }
+
+  Future<void> Oncancel(
+    String challengeId,
+    String status,
+  ) async {
+    var pro = Provider.of<ChallengeProvider>(context, listen: false);
+//var senderUserId = preferences!.getString(userIdKey).toString();
+    var data = {
+      'user_id': preferences!.getString(userIdKey).toString(),
+      'challenge_id': challengeId,
+      'status': 'cancel',
+    };
+    //log('print sender user id =======>>>>>>>>$');
+    log('challenges decline update data response=====>>>>>>>>>$data');
+    log('response of challenge id=====>>>>>$challengeId');
+
+    try {
+      await pro.updateChallengeStatus(
+        context: context,
+        data: data,
+      );
+      pro.removeChallenge(challengeId);
       customToast(context: context, msg: 'Challenge decline updated', type: 1);
       Navigator.pop(context);
     } catch (error) {

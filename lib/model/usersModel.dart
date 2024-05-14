@@ -5,15 +5,16 @@ class UsersModel {
   String profilePicture;
   String type;
   String follow;
+  bool challengeSent;
 
-  UsersModel({
-    required this.userId,
-    required this.name,
-    required this.location,
-    required this.profilePicture,
-    required this.type,
-    required this.follow,
-  });
+  UsersModel(
+      {required this.userId,
+      required this.name,
+      required this.location,
+      required this.profilePicture,
+      required this.type,
+      required this.follow,
+      this.challengeSent = false});
 
   factory UsersModel.fromJson(Map<String, dynamic> json) => UsersModel(
         userId: json["user_id"] ?? '',
@@ -22,5 +23,6 @@ class UsersModel {
         profilePicture: json["profile_picture"] ?? '',
         type: json["type"] ?? '',
         follow: json["follow"] ?? '',
+        challengeSent: false,
       );
 }

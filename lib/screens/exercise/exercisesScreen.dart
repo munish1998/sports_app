@@ -304,51 +304,56 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                         itemBuilder: (context, index) {
                           var item = data.usersFollowList[index];
                           return Container(
-                            child: Row(
+                            child: Column(
                               children: [
-                                cacheImages(
-                                    image: item.profilePicture,
-                                    radius: 50,
-                                    height: 45,
-                                    width: 45),
-                                SizedBox(
-                                  width: 30,
-                                ),
-                                Text(
-                                  item.name,
-                                  style: GoogleFonts.poppins(
-                                    color: white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                Spacer(),
-                                InkWell(
-                                  onTap: () {
-                                    onChallenge(
-                                        challengeId: item.userId,
-                                        exerciseId: exerciseId);
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.only(
-                                      right: 10,
+                                Row(
+                                  children: [
+                                    cacheImages(
+                                        image: item.profilePicture,
+                                        radius: 50,
+                                        height: 45,
+                                        width: 45),
+                                    SizedBox(
+                                      width: 30,
                                     ),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: grey,
-                                        borderRadius: BorderRadius.circular(6)),
-                                    child: Text(
-                                      "Challenge",
-                                      style: GoogleFonts.mulish(
+                                    Text(
+                                      item.name,
+                                      style: GoogleFonts.poppins(
                                         color: white,
-                                        fontSize: 12,
+                                        fontSize: 15,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                  ),
+                                    Spacer(),
+                                    InkWell(
+                                      onTap: () {
+                                        onChallenge(
+                                            challengeId: item.userId,
+                                            exerciseId: exerciseId);
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.only(
+                                          right: 10,
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                            gradient: btnGradient,
+                                            borderRadius:
+                                                BorderRadius.circular(6)),
+                                        child: Text(
+                                          "Challenge",
+                                          style: GoogleFonts.mulish(
+                                            color: white,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -368,6 +373,110 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             });
           });
         });
+  }
+
+  void challengeDialog1(
+      {required BuildContext context, required String exerciseId}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return Consumer<UsersProvider>(builder: (context, data, child) {
+            return Container(
+              height: 250,
+              margin: EdgeInsets.symmetric(horizontal: 20) +
+                  EdgeInsets.only(top: 300, bottom: 100),
+              decoration: BoxDecoration(
+                color: Color(0xff323232),
+                borderRadius: BorderRadius.circular(19),
+              ),
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: Stack(
+                  children: [
+                    // bottom image
+                    ListView.separated(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: EdgeInsets.all(16),
+                      itemCount: data.usersFollowList.length,
+                      itemBuilder: (context, index) {
+                        var item = data.usersFollowList[index];
+                        return Container(
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  cacheImages(
+                                    image: item.profilePicture,
+                                    radius: 50,
+                                    height: 45,
+                                    width: 45,
+                                  ),
+                                  SizedBox(width: 30),
+                                  Text(
+                                    item.name,
+                                    style: GoogleFonts.poppins(
+                                      color: white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  InkWell(
+                                    onTap: () {
+                                      // Check if the challenge was sent
+                                      if (!item.challengeSent) {
+                                        // If not sent, send the challenge
+                                        onChallenge(
+                                            challengeId: item.userId,
+                                            exerciseId: exerciseId);
+                                        // Update the UI to reflect the challenge sent
+                                        setState(() {
+                                          item.challengeSent = true;
+                                        });
+                                      }
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.only(right: 10),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      // Change button color to red if challenge is sent
+                                      decoration: BoxDecoration(
+                                        gradient: item.challengeSent
+                                            ? declined
+                                            : btnGradient,
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Text(
+                                        "Challenge",
+                                        style: GoogleFonts.mulish(
+                                          color: white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return SizedBox(
+                            height: 15, child: Divider(color: white));
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          });
+        });
+      },
+    );
   }
 
   Future<void> onChallenge(

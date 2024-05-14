@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -23,15 +24,15 @@ class OpenMessageScreen extends StatefulWidget {
   List<MessageModel> _chatList = [];
   String? receiverId;
   String senderId;
-  String currentuserId;
+  String? currentuserId;
   //final UsersModel users;
   OpenMessageScreen(
       {super.key,
       required this.receiverId,
       required this.senderId,
-      required this.currentuserId,
-      required this.senderName,
-      required this.receiverName,
+      this.currentuserId,
+      this.senderName,
+      this.receiverName,
       this.messageModel});
 
   @override
@@ -74,6 +75,12 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
   @override
   void initState() {
     super.initState();
+    FirebaseMessaging.onMessage.listen((message) {
+      print("Message :-> ${message.data}");
+    });
+    FirebaseMessaging.instance.getInitialMessage().then((value) {
+      print("initial Message :-> ${value?.data}");
+    });
     // Initialize SharedPreferences in initState
     SharedPreferences.getInstance().then((value) {
       setState(() {
@@ -343,60 +350,16 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                                     (senderId == widget.currentuserId)
                                         ? widget.receiverId.toString()
                                         : widget.senderId.toString();
-                                // log('userid===>>>>${pref!.getString(userIdKey).toString()}');
-                                // log('response=====>>>>>$receiverId1');
-                                //var item = value.userProfile;
 
-                                // onChatAdd(
-                                //     receiverId: widget.receiverId.toString() ==
-                                //             widget.currentuserId
-                                //         ? widget.receiverId.toString()
-                                //         : widget.senderId,
-                                //     message: textcontroller.text,
-                                //     senderId: widget.currentuserId);
-                                // onChatAdd(
-                                //     receiverId: widget.receiverId.toString() ==
-                                //             pref!
-                                //                 .getString(userIdKey)
-                                //                 .toString()
-                                //         ? widget.senderId
-                                //         : widget.receiverId.toString(),
-                                //     message: textcontroller.text,
-                                //     senderId:
-                                //         pref!.getString(userIdKey).toString());
                                 onChatAdd(
                                     receiverId: receiverId,
                                     message: textcontroller.text,
-                                    senderId: senderId);
-                                setState(() {
-                                  messageprovider.chatList.add(MessageModel(
-                                    senderId: widget.senderId,
-                                    receiverId: receiverId,
-                                    message: textcontroller.text,
-                                    datetime: DateTime.now()
-                                        .toString(), // Assuming the current timestamp for the new message
-                                  ));
-                                });
+                                    senderId: senderId,
+                                    messageprovider:
+                                        Provider.of<MessageProvider>(context,
+                                            listen: false));
+                                log('message response ====>>>>${messageprovider.chatList}');
                               },
-
-                              // onTap: () {
-                              //   log('currentuserId====>>>>${widget.currentuserId}');
-                              //   log('senderID==${widget.senderId}');
-                              //   log('receiverID==$receiverId1');
-                              //   String senderId = widget.currentuserId;
-                              //   String receiverId =
-                              //       (senderId == widget.senderId)
-                              //           ? widget.senderId.toString()
-                              //           : widget.receiverId.toString();
-
-                              //   // Call the sendMessage function to add the message to the provider
-                              //   sendMessage(receiverId, textcontroller.text,
-                              //       senderId, messageprovider);
-
-                              //   // Clear the text field
-                              //   textcontroller.clear();
-                              // },
-
                               child: Container(
                                 padding: const EdgeInsets.all(15),
                                 decoration: const BoxDecoration(
@@ -422,75 +385,28 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
         ));
   }
 
-  void sendMessage(String receiverId, String message, String senderId,
-      MessageProvider messageProvider) {
-    // Add the message to the chatList
-    setState(() {
-      messageProvider.chatList.add(MessageModel(
-          senderId: senderId,
-          receiverId: receiverId,
-          message: message,
-          datetime: DateTime.now().toString()));
-    });
-  }
-
-  Future<void> onChatAdd1({
-    required String receiverId,
-    required String message,
-    required String senderId,
-  }) async {
-    var pro = Provider.of<MessageProvider>(context, listen: false);
-    while (pref == null) {
-      await Future.delayed(
-          Duration(milliseconds: 100)); // Adjust delay as needed
-    }
-    // Retrieve senderId from SharedPreferences
-    var actualSenderId = pref!.getString(userIdKey) ?? '';
-    if (actualSenderId.isEmpty) {
-      throw Exception('Sender ID is empty');
-    }
-
-    var data = {
-      'sender_id': actualSenderId, // Use the retrieved senderId
-      'receiver_id': receiverId,
-      'message': textcontroller.text,
-    };
-
-    log('senderID response Api====>>>$actualSenderId');
-    pro.addChat(context: context, data: data).then((value) {
-      // Add the new message to the chat list
-    });
-
-    // Clear the text input field after sending the message
-    textcontroller.clear();
-  }
-
   Future<void> onChatAdd({
     required String receiverId,
     required String message,
     required String senderId,
-    MessageProvider? messageprovider,
+    required MessageProvider messageprovider,
   }) async {
-    var pro = Provider.of<MessageProvider>(context, listen: false);
-    while (pref == null) {
-      await Future.delayed(
-          Duration(milliseconds: 100)); // Adjust delay as needed
-    }
-    var actualSenderId = pref!.getString(userIdKey) ?? '';
-    if (actualSenderId.isEmpty) {
-      throw Exception('Sender ID is empty');
-    }
+    try {
+      var actualSenderId = pref!.getString(userIdKey) ?? '';
+      if (actualSenderId.isEmpty) {
+        throw Exception('Sender ID is empty');
+      }
 
-    var data = {
-      'sender_id': actualSenderId,
-      'receiver_id': receiverId,
-      'message': message,
-    };
+      var data = {
+        'sender_id': actualSenderId,
+        'receiver_id': receiverId,
+        'message': message,
+      };
 
-    pro.addChat(context: context, data: data).then((value) {
+      await messageprovider.addChat(context: context, data: data);
+
       setState(() {
-        messageprovider!.chatList.insert(
-          messageprovider.chatList.length - 1,
+        messageprovider.chatList.add(
           MessageModel(
             senderId: actualSenderId,
             receiverId: receiverId,
@@ -498,20 +414,17 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
             datetime: DateTime.now().toString(),
           ),
         );
-        //  log('messagemodel response====>>>$')
       });
 
-      // Scroll to the bottom of the list to show the new message
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
+        duration: Duration(seconds: 0),
         curve: Curves.easeOut,
       );
-    }).catchError((error) {
-      print('Error sending message: $error');
-    });
 
-    // Clear the text input field after sending the message
-    textcontroller.clear();
+      textcontroller.clear();
+    } catch (error) {
+      log('Error sending message: $error');
+    }
   }
 }

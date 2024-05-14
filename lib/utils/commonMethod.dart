@@ -166,41 +166,54 @@ Widget button(
 
 void commonAlert(BuildContext context, String message) {
   showCupertinoDialog(
-      context: context,
-      builder: (context) {
-        return Theme(
-          data: ThemeData.light(),
-          child: Builder(builder: (context) {
-            return CupertinoAlertDialog(
-              title: Text(
-                appName,
-                style: TextStyle(
-                  color: Colors.black,
+    context: context,
+    builder: (context) {
+      return Theme(
+        data: ThemeData
+            .dark(), // Set theme to dark to change background color to black
+        child: CupertinoAlertDialog(
+          title: Text(
+            appName,
+            style: TextStyle(
+              color: Colors.white, // Set title text color to white
+            ),
+          ),
+          content: Container(
+            padding: EdgeInsets.all(15),
+            // color: Colors.black, // Set content background color to black
+            child: Text(
+              message,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14), // Set content text color to white
+            ),
+          ),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: primary, // Set button background color to green
+                  borderRadius: BorderRadius.circular(
+                      15), // Optional: Add border radius for button
                 ),
-              ),
-              content: Container(
-                padding: EdgeInsets.all(15),
                 child: Text(
-                  message,
-                  style: TextStyle(color: Colors.black, fontSize: 14),
+                  'Ok',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16), // Set button text color to white
                 ),
               ),
-              actions: [
-                CupertinoDialogAction(
-                  isDefaultAction: true,
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Ok',
-                    style: TextStyle(color: Colors.black, fontSize: 16),
-                  ),
-                )
-              ],
-            );
-          }),
-        );
-      });
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
 String videoTime(String time) {

@@ -1,9 +1,13 @@
 import 'dart:developer';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:touchmaster/model/inboxMessageModel.dart';
+import 'package:touchmaster/model/mesageModel.dart';
 import 'package:touchmaster/providers/messageProviders.dart';
+import 'package:touchmaster/screens/connection/messageConnection.dart';
 
 import 'package:touchmaster/utils/constant.dart';
 
@@ -23,8 +27,11 @@ class InboxMessageScreen extends StatefulWidget {
 }
 
 class _InboxMessageScreenState extends State<InboxMessageScreen> {
+  TextEditingController _searchcontroller = TextEditingController();
+  List<MessageInboxModel> filteredMessages = [];
   late SharedPreferences pref;
   late String rceiverId;
+  bool _isSeraching = false;
   //String userID = pref!.getString(userIdKey) ?? '';
   @override
   void initState() {
@@ -59,35 +66,48 @@ class _InboxMessageScreenState extends State<InboxMessageScreen> {
           ),
         ),
         centerTitle: true,
-        title: Text(
-          "Inbox",
-          style: TextStyle(
-            letterSpacing: 4,
-            fontFamily: "BankGothic",
-            color: Colors.white,
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
+        title: _isSeraching
+            ? TextField(
+                controller: _searchcontroller,
+                onChanged: (value) {
+                  filterMessages(value);
+                },
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'name, email....',
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
+                autofocus: true,
+              )
+            : Text(
+                "Inbox",
+                style: TextStyle(
+                  letterSpacing: 4,
+                  fontFamily: "BankGothic",
+                  color: Colors.white,
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.menu,
-              color: Colors.black,
-            ),
+            onPressed: () {
+              setState(() {
+                _isSeraching = !_isSeraching;
+              });
+            },
+            icon: Icon(
+                _isSeraching
+                    ? CupertinoIcons.clear_circled_solid
+                    : Icons.search,
+                color: Colors.white),
           ),
         ],
       ),
       body: Consumer<MessageProvider>(
         builder: (context, data, child) {
           return (data.inboxList.isEmpty)
-              ? Center(
-                  child: Text(
-                    'You have no any connection yet!',
-                    style: TextStyle(color: Colors.white54),
-                  ),
-                )
+              ? ConnectionsScreen1()
               : Container(
                   child: Padding(
                     padding: EdgeInsets.all(16),
@@ -199,5 +219,26 @@ class _InboxMessageScreenState extends State<InboxMessageScreen> {
         },
       ),
     );
+  }
+
+  void filterMessages(String query) {
+    if (query.isNotEmpty) {
+      List<MessageInboxModel> tempList = [];
+      // Assuming inboxList contains MessageModel objects
+      Provider.of<MessageProvider>(context, listen: false)
+          .inboxList
+          .forEach((message) {
+        if (message.userName!.toLowerCase().contains(query.toLowerCase())) {
+          tempList.add(message);
+        }
+      });
+      setState(() {
+        filteredMessages = tempList;
+      });
+    } else {
+      setState(() {
+        filteredMessages = [];
+      });
+    }
   }
 }

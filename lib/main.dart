@@ -2,10 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:touchmaster/screens/connection/messageConnection.dart';
 
 import 'providers/allProviders.dart';
 import 'screens/splash/splash.dart';
@@ -29,8 +27,6 @@ MessagingService _msgService = MessagingService();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey =
-      'pk_test_51PDi6gSFgGEQSEVhKwOVEvy2IYigcgCU2F7f9G8VAyRUJcEthde6JVX3hacyJ41CSXMsplp2zOxh7BDIaTyV9Lug00IWWvH3g3';
   preferences = await SharedPreferences.getInstance();
   // cameras = await availableCameras();
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,21 +70,21 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: AllProviders().allProvider,
       child: MaterialApp(
-          title: 'Touch Master',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.deepPurple,
-            ),
-            appBarTheme: AppBarTheme(
-                backgroundColor: Colors.black,
-                iconTheme: IconThemeData(color: Colors.white)),
-            // scaffoldBackgroundColor: Colors.black,
-            useMaterial3: true,
+        title: 'Touch Master',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.deepPurple,
           ),
-          home: SplashScreen()
-          // home: ExampleScreen(),
-          ),
+          appBarTheme: AppBarTheme(
+              backgroundColor: Colors.black,
+              iconTheme: IconThemeData(color: Colors.white)),
+          // scaffoldBackgroundColor: Colors.black,
+          useMaterial3: true,
+        ),
+        home: SplashScreen(),
+        // home: ExampleScreen(),
+      ),
     );
   }
 }

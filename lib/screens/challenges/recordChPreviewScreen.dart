@@ -214,7 +214,7 @@ class _RecordChPreviewScreenState extends State<RecordChPreviewScreen> {
               children: [
                 InkWell(
                   onTap: () {
-                    onPending(widget.challengeId, 'attempt');
+                    onPending(widget.challengeId, 'attempt', '');
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -237,9 +237,7 @@ class _RecordChPreviewScreenState extends State<RecordChPreviewScreen> {
         ),
       );
   Future<void> onPending(
-    String challengeId,
-    String status,
-  ) async {
+      String challengeId, String status, String video) async {
     var pro = Provider.of<ChallengeProvider>(context, listen: false);
 //var senderUserId = preferences!.getString(userIdKey).toString();
     var data = {

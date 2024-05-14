@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:touchmaster/screens/plans/custom.dart';
 import 'package:touchmaster/screens/plans/payment.dart';
+import 'package:touchmaster/utils/constant.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -41,6 +42,27 @@ class _HomePageState extends State<HomePage> {
   String selectedCurrency = 'USD';
 
   bool isPayment = false;
+  Future<void> initpaymentsheett() async {
+    try {
+      final response = createPaymentIntent(
+          name: nameController.text,
+          address: addressController.text,
+          pin: pincodeController.text,
+          city: cityController.text,
+          state: stateController.text,
+          country: countryController.text,
+          currency: currency,
+          amount: amountController.text);
+      await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+        customFlow: false,
+        merchantDisplayName: 'munish rai',
+        // paymentIntentClientSecret: response['client_secret'],
+      ));
+    } catch (e) {
+      Text(e.toString());
+    }
+  }
 
   Future<void> initPaymentSheet() async {
     try {
@@ -80,6 +102,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       backgroundColor: Colors.grey,
       body: SingleChildScrollView(
         child: Column(

@@ -18,7 +18,7 @@
 
     <application
         android:name="${applicationName}"
-        android:enableOnBackInvokedCallback="true"
+        android:enableOnBackInvokedCallback="false"
         android:icon="@mipmap/ic_launcher"
         android:label="Touch Master"
         android:requestLegacyExternalStorage="true"

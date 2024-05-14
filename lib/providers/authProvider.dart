@@ -141,6 +141,7 @@ class AuthProvider with ChangeNotifier {
     final response =
         await ApiClient().postData(context: context, url: url, body: data);
     navPop(context: context);
+    print('');
     log('message=======>>>>>   ${response.body}');
     if (response.statusCode == 200) {
       var result = jsonDecode(response.body);

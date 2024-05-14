@@ -235,12 +235,17 @@ class _PlansScreenState extends State<PlansScreen> {
                 itemCount: data.subscription.length,
                 itemBuilder: (context, index) {
                   var item = data.subscription[index];
+                  Color color;
+                  if (item.id == 1) {
+                    color = Colors.blue;
+                  }
                   return InkWell(
                       onTap: () {
                         setState(() {
                           initIndex = index;
                         });
                       },
+                      // child: CircularProgressIndicator());
                       child: planItem(item));
                 },
                 separatorBuilder: (context, index) => SizedBox(
