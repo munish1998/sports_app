@@ -71,11 +71,31 @@ class _ConnectionsScreen1State extends State<ConnectionsScreen1> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        centerTitle: true,
+        title: Text(
+          "Connections",
+          style: TextStyle(
+            letterSpacing: 4,
+            fontFamily: "BankGothic",
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back_ios_new),
+        ),
+      ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
-            SizedBox(height: 30),
+            SizedBox(height: 20),
             Row(
               children: [
                 Expanded(

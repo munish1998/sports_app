@@ -1,26 +1,30 @@
-import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:touchmaster/screens/plans/home.dart';
-import 'package:touchmaster/screens/plans/paymentScreen.dart';
-import 'package:touchmaster/screens/plans/stripe_payment_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'dart:developer';
+import 'package:badges/src/badge.dart';
+import 'package:http/http.dart' as http;
+import 'package:touchmaster/app_image.dart';
+import 'package:touchmaster/common/app_colors.dart';
+import 'package:touchmaster/model/planModel.dart';
+import 'package:touchmaster/screens/notifications/notifications.dart';
 
-import '../../utils/color.dart';
-import '/app_image.dart';
-import '/common/app_colors.dart';
-import '/model/planModel.dart';
-import '/providers/planProvider.dart';
-import '/screens/notifications/notifications.dart';
-import '/utils/constant.dart';
-import '/utils/size_extension.dart';
+import 'package:touchmaster/service/apiConstant.dart';
+import 'package:touchmaster/utils/color.dart';
+import 'package:touchmaster/utils/commonMethod.dart';
+import 'package:touchmaster/providers/planProvider.dart';
+import 'package:touchmaster/utils/constant.dart';
+import 'package:touchmaster/utils/size_extension.dart';
 
 class PlansScreen extends StatefulWidget {
-  const PlansScreen({super.key});
+  PlansScreen({super.key, this.planModel});
 
   @override
   State<PlansScreen> createState() => _PlansScreenState();
+  PlanModel? planModel;
 }
 
 class _PlansScreenState extends State<PlansScreen> {
@@ -28,8 +32,108 @@ class _PlansScreenState extends State<PlansScreen> {
 
   double height = 0;
   double width = 0;
-
+  SharedPreferences? pref;
   int initIndex = 0;
+  String planID = '3';
+
+  @override
+  void initState() {
+    super.initState();
+    initFun();
+  }
+
+  initFun() async {
+    var pro = Provider.of<PlanProvider>(context, listen: false);
+
+    pref = await SharedPreferences.getInstance();
+    final userId = pref!.getString(userIdKey).toString();
+    var data = {'user_id': userId, 'plan_id': pro.planModel!.id.toString()};
+    log('userId response===>>>$userId');
+    log('response planid====---===----${pro.planModel!.id}');
+    pro.buySubsciption1(context: context, data: data);
+  }
+
+  bool isPayment = false;
+
+  Future<void> initPayment() async {
+    SharedPreferences? pref = await SharedPreferences.getInstance();
+    final planID = '3';
+
+    if (pref != null) {
+      final userID = pref.getString(userIdKey).toString();
+      if (userID != null && planID != null) {
+        try {
+          final data = await Provider.of<PlanProvider>(context, listen: false)
+              .buySubsciption1(
+                  context: context,
+                  data: {'user_id': userID, 'plan_id': planID});
+
+          log('data response ====>>>>$data');
+
+          if (data != null && data['subscription'] != null) {
+            final subscription = data['subscription'];
+            final secretKey = subscription['secret_key'];
+            final orderID = subscription['order_id'];
+            log('subscription response ====>>>>$subscription');
+            log('Payment Intent Secret: $secretKey');
+            log('Order ID: $orderID');
+
+            if (secretKey != null && secretKey.startsWith('sk_')) {
+              try {
+                // Initialize the payment sheet
+                await Stripe.instance.initPaymentSheet(
+                  paymentSheetParameters: SetupPaymentSheetParameters(
+                    customFlow: false,
+                    merchantDisplayName: 'Touch Master',
+                    paymentIntentClientSecret: secretKey,
+                    style: ThemeMode.dark,
+                  ),
+                );
+                await Stripe.instance.presentPaymentSheet();
+
+                // Show success message
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                    "Payment Done",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: Colors.green,
+                ));
+
+                setState(() {
+                  isPayment = true;
+                });
+              } catch (e) {
+                log("Payment sheet error: $e");
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error presenting payment sheet: $e')),
+                );
+              }
+            } else {
+              log('Invalid secret key');
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Invalid Payment Intent client secret')),
+              );
+            }
+          } else {
+            log('Invalid subscription data received');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to retrieve payment details')),
+            );
+          }
+        } catch (e) {
+          log("Payment error: $e");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
+      } else {
+        log('Error: userID or planID is null');
+      }
+    } else {
+      log('Error: SharedPreferences instance is null');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,34 +148,34 @@ class _PlansScreenState extends State<PlansScreen> {
           "assets/logo.png",
           height: 30,
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NotificationScreen(),
-                ),
-              );
-            },
-            icon: badges.Badge(
-              badgeStyle: badges.BadgeStyle(
-                badgeColor: primaryColor,
-              ),
-              badgeContent: Text(
-                '0',
-                style: GoogleFonts.lato(
-                  color: Colors.black,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              child: const AppImage(
-                "assets/notification.svg",
-              ),
-            ),
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(
+        //           builder: (context) => NotificationScreen(),
+        //         ),
+        //       );
+        //     },
+        //     icon: badges.Badge(
+        //       badgeStyle: badges.BadgeStyle(
+        //         badgeColor: primaryColor,
+        //       ),
+        //       badgeContent: Text(
+        //         '0',
+        //         style: GoogleFonts.lato(
+        //           color: Colors.black,
+        //           fontSize: 13,
+        //           fontWeight: FontWeight.w700,
+        //         ),
+        //       ),
+        //       child: const AppImage(
+        //         "assets/notification.svg",
+        //       ),
+        //     ),
+        //   )
+        // ],
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: InkWell(
@@ -245,7 +349,6 @@ class _PlansScreenState extends State<PlansScreen> {
                           initIndex = index;
                         });
                       },
-                      // child: CircularProgressIndicator());
                       child: planItem(item));
                 },
                 separatorBuilder: (context, index) => SizedBox(
@@ -291,9 +394,8 @@ class _PlansScreenState extends State<PlansScreen> {
               ),
               child: Center(
                 child: InkWell(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomePage()));
+                  onTap: () async {
+                    initPayment();
                   },
                   child: Text(
                     "Subscribe Now",

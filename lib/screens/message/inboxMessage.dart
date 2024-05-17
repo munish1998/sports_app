@@ -89,25 +89,25 @@ class _InboxMessageScreenState extends State<InboxMessageScreen> {
                   fontWeight: FontWeight.w400,
                 ),
               ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _isSeraching = !_isSeraching;
-              });
-            },
-            icon: Icon(
-                _isSeraching
-                    ? CupertinoIcons.clear_circled_solid
-                    : Icons.search,
-                color: Colors.white),
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {
+        //       setState(() {
+        //         _isSeraching = !_isSeraching;
+        //       });
+        //     },
+        //     icon: Icon(
+        //         _isSeraching
+        //             ? CupertinoIcons.clear_circled_solid
+        //             : Icons.search,
+        //         color: Colors.white),
+        //   ),
+        // ],
       ),
       body: Consumer<MessageProvider>(
         builder: (context, data, child) {
           return (data.inboxList.isEmpty)
-              ? ConnectionsScreen1()
+              ? Center(child: Text('No data found'))
               : Container(
                   child: Padding(
                     padding: EdgeInsets.all(16),

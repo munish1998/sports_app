@@ -69,4 +69,8 @@ class Apis {
   static const String addChat = '${baseUrl}chat/add_chat';
   static const String getchatHistory = '${baseUrl}chat/chat_history';
   static const String inboxHistory = '${baseUrl}chat/chat_inbox';
+
+  //-------------------Subscription section
+
+  static const String buySubscription = '${baseUrl}user/buy_subscription';
 }

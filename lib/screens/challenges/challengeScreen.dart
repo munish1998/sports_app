@@ -232,7 +232,8 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                         : (item.status == 'attempt' && item.action == 'sent')
                             ? approvedBTN(item.id.toString())
                             : (item.status == 'decline' &&
-                                    item.senderUserId != widget.userId)
+                                    item.senderUserId != widget.userId &&
+                                    item.action == 'receive')
                                 ? reAttendBTN(
                                     item.video!, item.id!, item.thumbnail!)
                                 : (item.status == 'approve' &&
@@ -768,6 +769,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                                         ),
                                         InkWell(
                                           onTap: () {
+                                            log('decline response ===>>>>');
                                             decline(challengeId, 'decline');
                                             Navigator.push(
                                                 context,
