@@ -45,8 +45,8 @@ class _InboxMessageScreenState extends State<InboxMessageScreen> {
     pref = await SharedPreferences.getInstance();
     rceiverId = pref!.getString(userIdKey) ?? '';
     var data = {'user_id': rceiverId};
-    log('userId response===>>>$rceiverId');
-    log('response of get chat====---===----$data');
+    //  log('userId response===>>>$rceiverId');
+    //  log('response of get chat====---===----$data');
     pro.getChatInbox(context: context, data: data);
   }
 

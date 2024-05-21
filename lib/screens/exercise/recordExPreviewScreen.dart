@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/main.dart';
 import 'package:touchmaster/providers/challengesProvider.dart';
+import 'package:touchmaster/screens/exercise/exercisePlayerScreen.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 
@@ -423,7 +424,11 @@ class _RecordExPreviewScreenState extends State<RecordExPreviewScreen> {
           };
           exPro.completeExercises(context: context, data: exData);
           // if (type != 'draft') {
-          //   navPushRemove(context: context, action: DashboardScreen());
+          // navPushRemove(
+          //     context: context,
+          //     action: ExercisePlayerScreen(
+          //       exercise: [],
+          //     ));
           // }
         }
       });

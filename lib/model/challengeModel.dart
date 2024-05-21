@@ -56,6 +56,8 @@ class ChallengeModel {
   String? title;
   String? datetime;
   String? status;
+  String? declined;
+  String? declineBy;
   String? videoId;
   String? thumbnail;
   String? video;
@@ -70,6 +72,8 @@ class ChallengeModel {
       this.title,
       this.datetime,
       this.status,
+      this.declined,
+      this.declineBy,
       this.videoId,
       this.thumbnail,
       this.video,
@@ -84,6 +88,8 @@ class ChallengeModel {
     title = json['title'];
     datetime = json['datetime'];
     status = json['status'];
+    declined = json['declined'];
+    declineBy = json['decline_by'];
     videoId = json['video_id'];
     thumbnail = json['thumbnail'];
     video = json['video'];

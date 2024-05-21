@@ -53,7 +53,7 @@ class MessageProvider with ChangeNotifier {
     } catch (error) {}
   }
 
-  Future<void> getChatInbox({
+  Future<void> getChatInbox5({
     required BuildContext context,
     required Map data,
   }) async {
@@ -81,78 +81,7 @@ class MessageProvider with ChangeNotifier {
     } catch (error) {}
   }
 
-  // Future<void> addChat({
-  //   required BuildContext context,
-  //   required Map data,
-  // }) async {
-  //   var url = Uri.parse(Apis.addChat);
-  //   log('url response=====$url');
-  //   final response = await ApiClient()
-  //       .postDataByToken(context: context, url: url, body: data);
-  //   var result = jsonDecode(response.body);
-  //   log('provider chat response===========================${response.body}');
-  //   if (response.statusCode == 200) {
-  //     if (result['code'] == 200) {
-  //       // Add the new message to the local chat list
-  //       _chatList.add(MessageModel.fromJson(result['message']));
-  //       // Notify listeners to update the UI
-  //       notifyListeners();
-  //     } else if (result['code'] == 401) {
-  //       // Handle unauthorized access
-  //     } else if (result['code'] == 201) {
-  //       // Handle other status codes if needed
-  //     } else {
-  //       // Handle other cases
-  //       notifyListeners();
-  //     }
-  //   } else {
-  //     customToast(context: context, msg: result['message'], type: 0);
-  //     notifyListeners();
-  //   }
-  // }
-
-  // Future<void> addChat({
-  //   required BuildContext context,
-  //   required Map data,
-  // }) async {
-  //   // Obtain the user ID from SharedPreferences or any other source
-  //   pref = await SharedPreferences.getInstance();
-  //   String? userId = pref!.getString(userIdKey);
-
-  //   // Ensure the user ID is not null before adding it to the data payload
-  //   if (userId != null) {
-  //     // Add the user ID to the data payload
-  //     data['user_id'] = userId;
-  //   }
-
-  //   // Make the API call with the modified data payload
-  //   var url = Uri.parse(Apis.addChat);
-  //   log('url response=====$url');
-  //   final response = await ApiClient()
-  //       .postDataByToken(context: context, url: url, body: data);
-  //   var result = jsonDecode(response.body);
-  //   log('provider chat response===========================${response.body}');
-  //   if (response.statusCode == 200) {
-  //     if (result['code'] == 200) {
-  //       // Add the new message to the local chat list
-  //       _chatList.add(MessageModel.fromJson(result['chats']));
-  //       // Notify listeners to update the UI
-  //       notifyListeners();
-  //     } else if (result['code'] == 401) {
-  //       // Handle unauthorized access
-  //     } else if (result['code'] == 201) {
-  //       // Handle other status codes if needed
-  //     } else {
-  //       // Handle other cases
-  //       notifyListeners();
-  //     }
-  //   } else {
-  //     customToast(context: context, msg: result['message'], type: 0);
-  //     notifyListeners();
-  //   }
-  // }
-
-  Future<void> addChat({
+  Future<void> addCha5t({
     required BuildContext context,
     required Map data,
   }) async {
@@ -259,5 +188,69 @@ class MessageProvider with ChangeNotifier {
 
       notifyListeners();
     }
+  }
+
+  Future<void> addChat({
+    required BuildContext context,
+    required Map data,
+  }) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String? userId = pref.getString(userIdKey);
+    if (userId != null) {
+      data['user_id'] = userId;
+    }
+
+    var url = Uri.parse(Apis.addChat);
+    log('url response=====$url');
+    final response = await ApiClient()
+        .postDataByToken(context: context, url: url, body: data);
+    var result = jsonDecode(response.body);
+    log('provider chat response===========================${response.body}');
+    if (response.statusCode == 200) {
+      if (result['code'] == 200) {
+        // Call getChatInbox to update the inbox messages list
+        await getChatInbox(context: context, data: {'user_id': userId});
+        // Notify listeners to update the UI
+        notifyListeners();
+      } else if (result['code'] == 401) {
+        // Handle unauthorized access
+      } else if (result['code'] == 201) {
+        // Handle other status codes if needed
+      } else {
+        // Handle other cases
+        notifyListeners();
+      }
+    } else {
+      customToast(context: context, msg: result['message'], type: 0);
+      notifyListeners();
+    }
+  }
+
+  Future<void> getChatInbox({
+    required BuildContext context,
+    required Map data,
+  }) async {
+    try {
+      var url = Uri.parse(Apis.inboxHistory);
+
+      final response = await ApiClient().postDataByToken(
+        context: context,
+        url: url,
+        body: data,
+      );
+
+      if (response.statusCode == 200) {
+        var result = jsonDecode(response.body);
+        if (result['code'] == 200) {
+          var list = result['chats'] as List;
+          _inboxList.clear(); // Clear existing chat list
+          _inboxList = list.map((e) => MessageInboxModel.fromJson(e)).toList();
+          notifyListeners();
+        } else if (result['code'] == 401) {
+          Provider.of<AuthProvider>(context, listen: false).logout(context);
+        } else if (result['code'] == 201) {
+        } else {}
+      } else {}
+    } catch (error) {}
   }
 }

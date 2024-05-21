@@ -149,10 +149,14 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
           children: [
             AppImage(
               (item.status == 'pending')
-                  ? 'assets/target.png'
+                  ? 'assets/pending.png'
                   : (item.status == 'approve')
                       ? 'assets/approved.png'
-                      : 'assets/declined.png',
+                      : (item.status == 'attempt')
+                          ? 'assets/attempt.png'
+                          : (item.status == 'cancel')
+                              ? 'assets/cancel.png'
+                              : 'assets/declined.png',
               height: 75,
               width: 75,
             ),
@@ -174,26 +178,30 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   Text(
                     (item.status == 'pending' &&
                             item.senderUserId == widget.userId)
-                        ? 'Challenge send to ${item.reciverName}'
-                        : (item.status == 'attempt')
-                            ? 'Challenge attempted by ${item.reciverName}'
+                        ? 'Challenge send by ${item.senderName}'
+                        : (item.status == 'attempt' && item.action == 'sent')
+                            ? 'Challenge attempted by ${item.senderName}'
                             : (item.status == 'approve')
                                 ? 'Challenge approved by ${item.senderName}'
                                 : (item.status == 'pending')
                                     ? 'challenge send to ${item.senderName}'
-                                    : (item.status == 'attempt' &&
-                                            item.action == 'receiver')
-                                        ? 'challenge attempt by ${item.senderName}'
+                                    : (item.status == 'attempt')
+                                        ? 'challenge attempt'
                                         : (item.status == 'decline' &&
                                                 item.action == 'sent')
-                                            ? '${item.senderName} declined your challenge'
+                                            ? ' declined your challenge'
                                             : (item.status == 'decline' &&
                                                     item.action == 'receive')
                                                 ? '${item.senderName}declned your challenge'
                                                 : (item.status == 'cancel' &&
                                                         item.action == 'sent')
                                                     ? '${item.senderName} cancel your challenge'
-                                                    : '',
+                                                    : (item.status ==
+                                                                'attempt' &&
+                                                            item.action ==
+                                                                'sent')
+                                                        ? '${item.reciverName} attempt your challenge'
+                                                        : '',
                     style: TextStyle(color: Colors.white),
                   ),
                   SizedBox(
@@ -203,9 +211,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        item.senderUserId == widget.userId
-                            ? item.status!
-                            : item.datetime!,
+                        item.senderUserId == widget.userId ? item.status! : '',
                         style: TextStyle(color: white),
                       ),
                       SizedBox(
@@ -226,60 +232,83 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   //           style: TextStyle(color: Colors.white),
                   //         )
                   // ]),
-                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                    (item.status == 'pending' && item.action == 'receive')
-                        ? attemptBTN(item.video!, item.id!, item.thumbnail!)
-                        : (item.status == 'attempt' && item.action == 'sent')
-                            ? approvedBTN(item.id.toString())
-                            : (item.status == 'decline' &&
-                                    item.senderUserId != widget.userId &&
-                                    item.action == 'receive')
-                                ? reAttendBTN(
-                                    item.video!, item.id!, item.thumbnail!)
-                                : (item.status == 'approve' &&
-                                        item.action == 'sent')
-                                    ? Text(
-                                        'approved',
-                                        style: TextStyle(color: Colors.white),
-                                      )
-                                    : (item.status == 'attempt' &&
-                                            item.action == 'receive')
-                                        ? Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 5, horizontal: 15),
-                                            alignment: Alignment.center,
-                                            decoration: BoxDecoration(
-                                                gradient: approved,
-                                                borderRadius:
-                                                    BorderRadius.circular(8)),
-                                            child: Text(
-                                              'Attempted',
-                                              style: TextStyle(color: white),
-                                            ),
-                                          )
-                                        : (item.status == 'pending' &&
-                                                item.action == 'sent')
-                                            ? Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 5,
-                                                    horizontal: 15),
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                    gradient: approved,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8)),
-                                                child: Text(
-                                                  'challenged',
-                                                  style:
-                                                      TextStyle(color: white),
-                                                ),
-                                              )
-                                            : SizedBox(
-                                                height: 0,
-                                                width: 0,
-                                              )
-                  ]),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (item.status == 'pending' && item.action == 'receive')
+                        attemptBTN(item.video!, item.id!, item.thumbnail!)
+                      else if (item.status == 'attempt' &&
+                          item.action == 'sent')
+                        approvedBTN(item.id.toString())
+                      else if (item.status == 'decline' &&
+                          item.action == 'receive')
+                        if ((int.tryParse(item.declined ?? '0') ?? 0) >= 3)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 15),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                gradient: approved,
+                                borderRadius: BorderRadius.circular(8)),
+                            child: Text(
+                              'Report to admin',
+                              style: TextStyle(color: white),
+                            ),
+                          )
+                        else
+                          reAttendBTN(item.video!, item.id!, item.thumbnail!)
+                      else if (item.status == 'approve' &&
+                          item.action == 'sent')
+                        Text(
+                          'approved',
+                          style: TextStyle(color: Colors.white),
+                        )
+                      else if (item.status == 'attempt' &&
+                          item.action == 'receive')
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              gradient: approved,
+                              borderRadius: BorderRadius.circular(8)),
+                          child: Text(
+                            'Attempted',
+                            style: TextStyle(color: white),
+                          ),
+                        )
+                      else if (item.status == 'pending' &&
+                          item.action == 'sent')
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              gradient: approved,
+                              borderRadius: BorderRadius.circular(8)),
+                          child: Text(
+                            'challenged',
+                            style: TextStyle(color: white),
+                          ),
+                        )
+                      else if (item.status == 'decline' &&
+                          item.action == 'sent')
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              gradient: approved,
+                              borderRadius: BorderRadius.circular(8)),
+                          child: Text(
+                            'Challenge declined',
+                            style: TextStyle(color: white),
+                          ),
+                        )
+                      else
+                        SizedBox(height: 0, width: 0),
+                    ],
+                  )
                 ],
               ),
             )
@@ -392,14 +421,28 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   }
                 });
               },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    gradient: attempt, borderRadius: BorderRadius.circular(8)),
-                child: Text(
-                  'ReAttempt',
-                  style: TextStyle(color: white, fontSize: 12),
+              child: InkWell(
+                onTap: () {
+                  initializePlayer(video).then((value) {
+                    attemptAlert(
+                        context: context,
+                        challengeId: challengeId,
+                        thumb: thumb);
+
+                    log('response of pending challenge ====>>>>$video');
+                    log('response of pending challenge ====>>>>$thumb');
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      gradient: attempt,
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Text(
+                    'ReAttempt',
+                    style: TextStyle(color: white, fontSize: 12),
+                  ),
                 ),
               ),
             ),
@@ -873,6 +916,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     };
     log('challenge id response=====>>>>>$challengeId');
     log('status response====>>>>$status');
+    // log('response of data ===>>>${}')
     log('userId response====>>>>$userIdKey');
     //log('print sender user id =======>>>>>>>>$');
     log('challenges update data response=====>>>>>>>>>$data');

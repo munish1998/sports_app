@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/common/cacheImage.dart';
@@ -225,8 +226,13 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                                             width: 10,
                                           ),
                                           Text(
-                                            _extractTime(message.datetime) ??
-                                                '',
+                                            message.datetime != null
+                                                ? DateFormat('HH:mm').format(
+                                                    DateFormat(
+                                                            'dd-MM-yyyy HH:mm')
+                                                        .parse(
+                                                            message.datetime!))
+                                                : 'Invalid date',
                                             style: TextStyle(
                                               color: isSender
                                                   ? primary
@@ -345,12 +351,21 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                                 log('currentuserId====>>>>${widget.currentuserId}');
                                 log('senderID==${widget.senderId}');
                                 log('receiverID==$receiverId1');
-                                String senderId = widget.senderId;
+                                String senderId = widget.receiverId.toString();
                                 String receiverId =
                                     (senderId == widget.currentuserId)
-                                        ? widget.receiverId.toString()
-                                        : widget.senderId.toString();
-
+                                        ? widget.senderId.toString()
+                                        : widget.receiverId.toString();
+                                setState(() {
+                                  var newMessage = MessageModel(
+                                    senderId: senderId,
+                                    receiverId: receiverId,
+                                    message: textcontroller.text,
+                                    datetime: DateTime.now().toString(),
+                                  );
+                                  messageprovider.chatList
+                                      .insert(0, newMessage);
+                                });
                                 onChatAdd(
                                     receiverId: receiverId,
                                     message: textcontroller.text,
@@ -402,19 +417,8 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
         'receiver_id': receiverId,
         'message': message,
       };
-
+      log('data rsponse ===>>>$data');
       await messageprovider.addChat(context: context, data: data);
-
-      setState(() {
-        messageprovider.chatList.add(
-          MessageModel(
-            senderId: actualSenderId,
-            receiverId: receiverId,
-            message: message,
-            datetime: DateTime.now().toString(),
-          ),
-        );
-      });
 
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
