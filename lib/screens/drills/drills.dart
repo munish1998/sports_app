@@ -530,3 +530,190 @@
 //     }
 //   }
 // }
+
+
+
+//  Future<void> approveAlert({
+//     required BuildContext context,
+//   }) async {
+//     showDialog(
+//         context: context,
+//         builder: (context) {
+//           return StatefulBuilder(builder: (context, state) {
+//             return Consumer<ChallengeProvider>(builder: (context, data, child) {
+//               return (data == null)
+//                   ? SizedBox(
+//                       height: 0,
+//                     )
+//                   : Container(
+//                       height: 500,
+//                       width: width * 0.8,
+//                       margin: EdgeInsets.symmetric(horizontal: 20) +
+//                           EdgeInsets.only(top: 100, bottom: 100),
+//                       decoration: BoxDecoration(
+//                           color: Color(0xff323232),
+//                           borderRadius: BorderRadius.circular(8)),
+//                       child: Scaffold(
+//                         backgroundColor: Colors.transparent,
+//                         body: Column(
+//                           children: [
+//                             Row(
+//                               mainAxisAlignment: MainAxisAlignment.end,
+//                               children: [
+//                                 IconButton(
+//                                   onPressed: () {
+//                                     navPop(context: context);
+//                                   },
+//                                   icon: Icon(
+//                                     Icons.clear,
+//                                     color: white,
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
+//                             SizedBox(
+//                               height: 8,
+//                             ),
+//                             Row(
+//                               mainAxisAlignment: MainAxisAlignment.start,
+//                               children: [
+//                                 SizedBox(
+//                                   width: 25,
+//                                 ),
+//                                 Text(
+//                                   "Challenge",
+//                                   style: TextStyle(
+//                                       letterSpacing: 2,
+//                                       fontFamily: "BankGothic",
+//                                       color: white,
+//                                       fontWeight: FontWeight.w400),
+//                                 ),
+//                               ],
+//                             ),
+//                             SizedBox(
+//                               height: 16,
+//                             ),
+//                             SizedBox.fromSize(
+//                               size: Size(width * 0.9, 350),
+//                               child: Stack(
+//                                 children: [
+//                                   _vController != null &&
+//                                           _vController!.value.isInitialized
+//                                       ? Chewie(controller: _chewController!)
+//                                       : _vController!.value.isPlaying
+//                                           ? VideoPlayer(_vController!)
+//                                           : cacheImages(
+//                                               image: data.thumb,
+//                                               radius: 0,
+//                                               height: 350,
+//                                               width: width),
+//                                   Positioned(
+//                                       bottom: 5,
+//                                       left: 0,
+//                                       right: 0,
+//                                       child: Align(
+//                                         alignment: Alignment.center,
+//                                         child: Text(
+//                                           '${_vController!.value.duration.abs()}',
+//                                           style: TextStyle(
+//                                               color: white, fontSize: 25),
+//                                         ),
+//                                       )),
+//                                 ],
+//                               ),
+//                             ),
+//                             SizedBox(
+//                               height: 15,
+//                             ),
+//                             Row(
+//                               mainAxisAlignment: MainAxisAlignment.center,
+//                               children: [
+//                                 InkWell(
+//                                   onTap: () {
+//                                     state(() {
+//                                       if (_vController!.value.isPlaying) {
+//                                         _vController!.pause();
+//                                       } else {
+//                                         _vController!.play();
+//                                       }
+//                                     });
+//                                   },
+//                                   child: DottedBorder(
+//                                     // strokeWidth: 0.5,
+//                                     // stackFit: StackFit.loose,
+//                                     radius: Radius.circular(35),
+//                                     borderType: BorderType.RRect,
+//                                     dashPattern: [30, 3],
+//                                     color: primary,
+//                                     child: Container(
+//                                       padding: EdgeInsets.all(10),
+//                                       decoration: BoxDecoration(
+//                                         color: secondary,
+//                                         borderRadius: BorderRadius.circular(35),
+//                                       ),
+//                                       alignment: Alignment.center,
+//                                       child: Icon(
+//                                         _vController!.value.isPlaying
+//                                             ? Icons.pause
+//                                             : Icons.play_arrow,
+//                                         size: 35,
+//                                         color: white,
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
+//                             SizedBox(
+//                               height: 15,
+//                             ),
+//                             Row(
+//                               mainAxisAlignment: MainAxisAlignment.center,
+//                               children: [
+//                                 DottedBorder(
+//                                   strokeWidth: 2,
+//                                   // stackFit: StackFit.loose,
+//                                   radius: Radius.circular(35),
+//                                   borderType: BorderType.RRect,
+//                                   dashPattern: [25, 5],
+//                                   color: primary,
+//                                   child: Container(
+//                                     width: width * 0.8,
+//                                     padding: EdgeInsets.symmetric(
+//                                         vertical: 5, horizontal: 10),
+//                                     decoration: BoxDecoration(
+//                                       color: secondary,
+//                                       borderRadius: BorderRadius.circular(35),
+//                                     ),
+//                                     alignment: Alignment.center,
+//                                     child: Row(
+//                                       mainAxisAlignment:
+//                                           MainAxisAlignment.spaceBetween,
+//                                       children: [
+//                                         Text(
+//                                           'Approve',
+//                                           style: TextStyle(
+//                                               color: white, fontSize: 24),
+//                                         ),
+//                                         SizedBox(
+//                                           width: 50,
+//                                         ),
+//                                         Text(
+//                                           'Declined',
+//                                           style: TextStyle(
+//                                               color: white, fontSize: 24),
+//                                         ),
+//                                       ],
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     );
+//             });
+//           });
+//         });
+//   }

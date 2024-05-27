@@ -243,7 +243,8 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                         attemptBTN(item.video!, item.id!, item.thumbnail!)
                       else if (item.status == 'attempt' &&
                           item.action == 'sent')
-                        approvedBTN(item.id.toString())
+                        approvedBTN(item.id.toString(),
+                            item.thumbnail.toString(), item.video.toString())
                       else if (item.status == 'decline' &&
                           item.action == 'receive')
                         if ((int.tryParse(item.declined ?? '0') ?? 0) >= 3)
@@ -364,8 +365,8 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   attemptAlert(
                       context: context, challengeId: challengeId, thumb: thumb);
 
-                  log('response of pending challenge ====>>>>$video');
-                  log('response of pending challenge ====>>>>$thumb');
+                  log('response of attempt video challenge ====>>>>$video');
+                  log('response of attempt thumb challenge ====>>>>$thumb');
                 });
               },
               child: Container(
@@ -383,17 +384,24 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
         ),
       );
 
-  Widget approvedBTN(String challengeId) => Container(
+  Widget approvedBTN(String challengeId, String thumb, String video) =>
+      Container(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
             InkWell(
               onTap: () {
-                log("challengeId:-> ${challengeId.toString()}");
-                log('_videocontroller response====>>>>$_vController');
-                log('_chewcontroller response====>>>>>$_chewController');
-                approveAlert(context: context, challengeId: challengeId);
+                initializePlayer(video).then((value) {
+                  approveAlert2(
+                      context: context, challengeId: challengeId, thumb: thumb);
+
+                  log('response of approve video challenge ====>>>>$video');
+                  log('response of approve thumb challenge ====>>>>$thumb');
+                });
+                //  log("challengeId:-> ${challengeId.toString()}");
+                // log('_videocontroller response====>>>>$_vController');
+                // log('_chewcontroller response====>>>>>$_chewController');
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
@@ -432,7 +440,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                         context: context,
                         challengeId: challengeId,
                         thumb: thumb);
-
+                    log('response of attempt challenge id ===>>>>$challengeId');
                     log('response of pending challenge ====>>>>$video');
                     log('response of pending challenge ====>>>>$thumb');
                   });
@@ -642,74 +650,282 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
         });
   }
 
-  Future<void> approveAlert(
-      {required BuildContext context, required String challengeId}) async {
+  Future<void> approveAlert2(
+      {required BuildContext context,
+      required String challengeId,
+      required String thumb}) async {
     showDialog(
         context: context,
         builder: (context) {
           return StatefulBuilder(builder: (context, state) {
             return Consumer<ChallengeProvider>(builder: (context, data, child) {
-              return Container(
-                height: 500,
-                width: width * 0.8,
-                margin: EdgeInsets.symmetric(horizontal: 20) +
-                    EdgeInsets.only(top: 100, bottom: 100),
-                decoration: BoxDecoration(
-                    color: Color(0xff323232),
-                    borderRadius: BorderRadius.circular(8)),
-                child: Scaffold(
-                  backgroundColor: Colors.transparent,
-                  body: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              navPop(context: context);
-                            },
-                            icon: Icon(
-                              Icons.clear,
-                              color: white,
+              return (data == null)
+                  ? SizedBox(
+                      height: 0,
+                    )
+                  : Container(
+                      height: 500,
+                      width: width * 0.8,
+                      margin: EdgeInsets.symmetric(horizontal: 20) +
+                          EdgeInsets.only(top: 100, bottom: 100),
+                      decoration: BoxDecoration(
+                          color: Color(0xff323232),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Scaffold(
+                        backgroundColor: Colors.transparent,
+                        body: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    navPop(context: context);
+                                  },
+                                  icon: Icon(
+                                    Icons.clear,
+                                    color: white,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 25,
+                                ),
+                                Text(
+                                  "Challenge",
+                                  style: TextStyle(
+                                      letterSpacing: 2,
+                                      fontFamily: "BankGothic",
+                                      color: white,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 16,
+                            ),
+                            SizedBox.fromSize(
+                              size: Size(width * 0.9, 350),
+                              child: Stack(
+                                children: [
+                                  _vController != null &&
+                                          _vController!.value.isInitialized
+                                      ? Chewie(controller: _chewController!)
+                                      : _vController!.value.isPlaying
+                                          ? VideoPlayer(_vController!)
+                                          : cacheImages(
+                                              image: thumb,
+                                              radius: 0,
+                                              height: 350,
+                                              width: width),
+                                  Positioned(
+                                      bottom: 5,
+                                      left: 0,
+                                      right: 0,
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          '${_vController!.value.duration.abs()}',
+                                          style: TextStyle(
+                                              color: white, fontSize: 25),
+                                        ),
+                                      )),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    state(() {
+                                      if (_vController!.value.isPlaying) {
+                                        _vController!.pause();
+                                      } else {
+                                        _vController!.play();
+                                      }
+                                    });
+                                  },
+                                  child: DottedBorder(
+                                    // strokeWidth: 0.5,
+                                    // stackFit: StackFit.loose,
+                                    radius: Radius.circular(35),
+                                    borderType: BorderType.RRect,
+                                    dashPattern: [30, 3],
+                                    color: primary,
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: secondary,
+                                        borderRadius: BorderRadius.circular(35),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Icon(
+                                        _vController!.value.isPlaying
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
+                                        size: 35,
+                                        color: white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                DottedBorder(
+                                  strokeWidth: 2,
+                                  // stackFit: StackFit.loose,
+                                  radius: Radius.circular(35),
+                                  borderType: BorderType.RRect,
+                                  dashPattern: [25, 5],
+                                  color: primary,
+                                  child: Container(
+                                    width: width * 0.8,
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 5, horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      color: secondary,
+                                      borderRadius: BorderRadius.circular(35),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            approve(challengeId, 'approve');
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ChallengeScreen()));
+                                          },
+                                          child: Text(
+                                            'Approve',
+                                            style: TextStyle(
+                                                color: white, fontSize: 24),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 50,
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            decline(challengeId, 'decline');
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ChallengeScreen()));
+                                          },
+                                          child: Text(
+                                            'Declined',
+                                            style: TextStyle(
+                                                color: white, fontSize: 24),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: 25,
-                          ),
-                          Text(
-                            "Challenge",
-                            style: TextStyle(
+                    );
+            });
+          });
+        });
+  }
+
+  Future<void> approveAlert(
+      {required BuildContext context,
+      required String challengeId,
+      required String thumb}) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Consumer<ChallengeProvider>(
+              builder: (context, data, child) {
+                return Container(
+                  height: 500,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  margin: EdgeInsets.symmetric(horizontal: 20) +
+                      EdgeInsets.only(top: 100, bottom: 100),
+                  decoration: BoxDecoration(
+                    color: Color(0xff323232),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Scaffold(
+                    backgroundColor: Colors.transparent,
+                    body: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              icon: Icon(
+                                Icons.clear,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(width: 25),
+                            Text(
+                              "Challenge",
+                              style: TextStyle(
                                 letterSpacing: 2,
                                 fontFamily: "BankGothic",
-                                color: white,
-                                fontWeight: FontWeight.w400),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      SizedBox.fromSize(
-                        size: Size(width * 0.9, 350),
-                        child: Stack(
-                          children: [
-                            _vController != null &&
-                                    _vController!.value.isInitialized
-                                ? Chewie(controller: _chewController!)
-                                : cacheImages(
-                                    image: data.thumb,
-                                    radius: 0,
-                                    height: 350,
-                                    width: width),
-                            Positioned(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                        SizedBox.fromSize(
+                          size: Size(
+                              MediaQuery.of(context).size.width * 0.9, 350),
+                          child: Stack(
+                            children: [
+                              _vController != null &&
+                                      _vController!.value.isInitialized
+                                  ? Chewie(controller: _chewController!)
+                                  : cacheImages(
+                                      image: data.thumb,
+                                      radius: 0,
+                                      height: 350,
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
+                              Positioned(
                                 bottom: 5,
                                 left: 0,
                                 right: 0,
@@ -719,129 +935,132 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                                     _vController != null
                                         ? '${_vController!.value.duration.abs()}'
                                         : '',
-                                    style:
-                                        TextStyle(color: white, fontSize: 25),
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 25),
                                   ),
-                                )),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  if (_vController!.value.isPlaying) {
+                                    _vController!.pause();
+                                  } else {
+                                    _vController!.play();
+                                  }
+                                });
+                              },
+                              child: DottedBorder(
+                                radius: Radius.circular(35),
+                                borderType: BorderType.RRect,
+                                dashPattern: [30, 3],
+                                color: Colors
+                                    .blue, // replace 'primary' with actual color
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors
+                                        .grey, // replace 'secondary' with actual color
+                                    borderRadius: BorderRadius.circular(35),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Icon(
+                                    _vController != null &&
+                                            _vController!.value.isPlaying
+                                        ? Icons.pause
+                                        : Icons.play_arrow,
+                                    size: 35,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              state(() {
-                                if (_vController!.value.isPlaying) {
-                                  _vController!.pause();
-                                } else {
-                                  _vController!.play();
-                                }
-                              });
-                            },
-                            child: DottedBorder(
-                              // strokeWidth: 0.5,
-                              // stackFit: StackFit.loose,
+                        SizedBox(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            DottedBorder(
+                              strokeWidth: 2,
                               radius: Radius.circular(35),
                               borderType: BorderType.RRect,
-                              dashPattern: [30, 3],
-                              color: primary,
+                              dashPattern: [25, 5],
+                              color: Colors
+                                  .blue, // replace 'primary' with actual color
                               child: Container(
-                                padding: EdgeInsets.all(10),
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 10),
                                 decoration: BoxDecoration(
-                                  color: secondary,
+                                  color: Colors
+                                      .grey, // replace 'secondary' with actual color
                                   borderRadius: BorderRadius.circular(35),
                                 ),
                                 alignment: Alignment.center,
-                                child: Icon(
-                                  _vController != null &&
-                                          _vController!.value.isPlaying
-                                      ? Icons.pause
-                                      : Icons.play_arrow,
-                                  size: 35,
-                                  color: white,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        approve(challengeId, 'approve');
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ChallengeScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        'Approve',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 24),
+                                      ),
+                                    ),
+                                    SizedBox(width: 50),
+                                    InkWell(
+                                      onTap: () {
+                                        log('decline response ===>>>>');
+                                        decline(challengeId, 'decline');
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ChallengeScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        'Declined',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 24),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          DottedBorder(
-                            strokeWidth: 2,
-                            // stackFit: StackFit.loose,
-                            radius: Radius.circular(35),
-                            borderType: BorderType.RRect,
-                            dashPattern: [25, 5],
-                            color: primary,
-                            child: Container(
-                              width: width * 0.8,
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 10),
-                              decoration: BoxDecoration(
-                                color: secondary,
-                                borderRadius: BorderRadius.circular(35),
-                              ),
-                              alignment: Alignment.center,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      approve(challengeId, 'approve');
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ChallengeScreen()));
-                                    },
-                                    child: Text(
-                                      'Approve',
-                                      style:
-                                          TextStyle(color: white, fontSize: 24),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 50,
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      log('decline response ===>>>>');
-                                      decline(challengeId, 'decline');
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ChallengeScreen()));
-                                    },
-                                    child: Text(
-                                      'Declined',
-                                      style:
-                                          TextStyle(color: white, fontSize: 24),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            });
-          });
-        });
+                );
+              },
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> decline(

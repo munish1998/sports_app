@@ -426,8 +426,8 @@ class _PlansScreenState extends State<PlansScreen> {
                   onTap: () {
                     // Navigator.push(context,
                     //     MaterialPageRoute(builder: (context) => HomePage()));
-                    // initPayment();
-                    initPaymentSheet();
+                    initPayment();
+                    //  initPaymentSheet();
                   },
                   child: Text(
                     "Subscribe Now",
