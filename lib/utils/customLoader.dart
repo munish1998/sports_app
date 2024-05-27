@@ -228,8 +228,8 @@ void showLoaderDialog(BuildContext context, String? title) {
   debugPrint('------=>>>');
   AlertDialog alertDialogs = AlertDialog(
     elevation: 0,
-    backgroundColor: Colors.white,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+    backgroundColor: primary,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     content: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,

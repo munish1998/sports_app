@@ -443,6 +443,7 @@ class _RecordChPreviewScreenState extends State<RecordChPreviewScreen> {
         'video_length': duration,
         'status': type
       };
+      log('response of recordchpreviewchallemge video===>>>>$data');
       /* {'thumbnail': thumbImage,
         'video': compressedFile,}*/
       pro

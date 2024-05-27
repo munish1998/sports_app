@@ -30,7 +30,7 @@ class _InboxMessageScreenState extends State<InboxMessageScreen> {
   TextEditingController _searchcontroller = TextEditingController();
   List<MessageInboxModel> filteredMessages = [];
   late SharedPreferences pref;
-  late String rceiverId;
+  late String rceiverId = '';
   bool _isSeraching = false;
   //String userID = pref!.getString(userIdKey) ?? '';
   @override
@@ -169,7 +169,6 @@ class _InboxMessageScreenState extends State<InboxMessageScreen> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          // 'god morning',
                                           item.userName ?? '',
                                           style: GoogleFonts.inter(
                                             color: white,
@@ -177,21 +176,26 @@ class _InboxMessageScreenState extends State<InboxMessageScreen> {
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.all(6),
-                                          decoration: const BoxDecoration(
-                                            color: Color(0xff24D993),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Text(
-                                            item.unreadCount!,
-                                            style: GoogleFonts.inter(
-                                              color: Colors.white,
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
+                                        // Conditionally show unread count or tick icon
+                                        (item.userId != rceiverId &&
+                                                item.unreadCount != null)
+                                            ? Container(
+                                                padding:
+                                                    const EdgeInsets.all(6),
+                                                decoration: const BoxDecoration(
+                                                  color: Color(0xff24D993),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Text(
+                                                  item.unreadCount!,
+                                                  style: GoogleFonts.inter(
+                                                    color: Colors.white,
+                                                    fontSize: 12.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              )
+                                            : SizedBox.shrink()
                                       ],
                                     ),
                                     SizedBox(

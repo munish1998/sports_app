@@ -45,7 +45,7 @@ class _MonthScreenState extends State<MonthScreen> {
     var dataMonth = {
       'user_id': pref!.getString(userIdKey) ?? '',
       'filter_type': 'month', //Filter_type will be ----  today/ week/ month
-      'level_id': '0',
+      'level_id': '1',
     };
     pro.getLeaderboardMonth(context: context, data: dataMonth, isHome: false);
   }

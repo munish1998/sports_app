@@ -7,10 +7,16 @@ class MessageModel {
   String? receiverName;
   String? receiverPicture;
   String? message;
+  String? imageUrl;
   String? datetime;
 
   MessageModel(
-      {this.id, this.senderId, this.receiverId, this.message, this.datetime});
+      {this.id,
+      this.senderId,
+      this.receiverId,
+      this.message,
+      this.datetime,
+      required String filename});
 
   MessageModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -21,6 +27,7 @@ class MessageModel {
     receiverName = json['receiver_name'];
     receiverPicture = json['receiver_picture'];
     message = json['message'];
+    imageUrl = json['filename'];
     datetime = json['datetime'];
   }
 }

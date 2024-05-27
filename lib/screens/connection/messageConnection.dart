@@ -404,8 +404,8 @@ class _ConnectionsScreen1State extends State<ConnectionsScreen1> {
                                   senderId = currentuserID;
                                   receiverId = item.userId;
                                 } else {
-                                  senderId = item.userId;
-                                  receiverId = currentuserID;
+                                  senderId = widget.receiverId.toString();
+                                  receiverId = item.userId;
                                 }
                                 log('response of senderID===>>>$senderId');
                                 log('response of receiverID===>>>$receiverId');

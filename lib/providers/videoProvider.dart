@@ -53,11 +53,12 @@ class VideoProvider with ChangeNotifier {
     _thumbFile = '';
     try {
       var request = http.MultipartRequest('POST', url);
-
+      log('video file is empyty on thisline =====>>>>>');
       if (videoFile.isNotEmpty) {
         var thumbnail =
             await http.MultipartFile.fromPath('thumbnail', thumbFile);
         var video = await http.MultipartFile.fromPath('video', videoFile);
+        log('respopnse of video ===>>>>$video');
         request.files.add(thumbnail);
         request.files.add(video);
         log("FileName:--->${videoFile}");
@@ -74,6 +75,8 @@ class VideoProvider with ChangeNotifier {
       var responseString = String.fromCharCodes(responseData);
 
       log("Requests Progress--->$request    }");
+      log('request of upload video==>>>$response');
+      log('response of thumbnail====>>>>$_thumbFile');
       log("PostResponse----> $responseString");
       log("StatusCodePost---->${response.statusCode}");
       navPop(context: context);
@@ -81,6 +84,7 @@ class VideoProvider with ChangeNotifier {
       if (response.statusCode >= 200) {
         if (result['code'] == 200) {
           _uploadModel = UploadModel.fromJson(result);
+          log('response of _uploadmodel====>>>>$_uploadModel');
           // getThumb(_uploadModel!.thumbnail);
           _isUpload = true;
           commonToast(msg: result['message'], color: green);

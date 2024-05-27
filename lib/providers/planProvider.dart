@@ -67,7 +67,7 @@ class PlanProvider with ChangeNotifier {
     }
   }
 
-  Future buySubsciption1(
+  Future buySubsciption11(
       {required BuildContext context, required Map data}) async {
     var url = Uri.parse(Apis.buySubscription);
 
@@ -112,61 +112,71 @@ class PlanProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> buySubsciption2({
+  Future buySubscription1({
     required BuildContext context,
-    required String userId,
-    required String planId,
-    required Map<String, String> data,
+    required Map data,
   }) async {
     var url = Uri.parse(Apis.buySubscription);
+
+    notifyListeners();
     showLoaderDialog(context, 'Please wait...');
 
     try {
       final response = await ApiClient().postDataByToken(
         context: context,
         url: url,
-        body: {
-          'user_id': userId,
-          'plan_id': planId,
-        },
+        body: data,
       );
-      navPop(context: context);
+      return jsonDecode(response.body);
+      // if (response.statusCode == 200) {
+      //   // Decode the response body
+      //   var result = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
-        var result = jsonDecode(response.body);
-        int code = result['code'];
-        String message = result['message'];
+      //   // Check the 'code' from the response
+      //   int code = result['code'];
+      //   String message = result['message'];
 
-        if (code == 200) {
-          // Subscription details received successfully
-          Map<String, dynamic> subscription = result['subscription'];
-          String orderId = subscription['order_id'];
-          String secretKey = subscription['secret_key'];
-          String amount = subscription['amount'];
-          String currency = subscription['currency'];
-          String enviroment = subscription['enviroment'];
-          String merchantName = subscription['merchant_name'];
+      //   if (code == 200) {
+      //     // Subscription details received successfully
+      //     Map<String, dynamic> subscription = result['subscription'];
+      //     String orderId = subscription['order_id'];
+      //     String secretKey = subscription['secret_key'];
+      //     String amount = subscription['amount'];
+      //     String currency = subscription['currency'];
+      //     String environment = subscription['environment'];
+      //     String merchantName = subscription['merchant_name'];
 
-          // Handle subscription details as needed
-          // For example, you can proceed with payment using orderId and secretKey
-        } else if (code == 401) {
-          // Unauthorized, handle logout or authentication error
-          Provider.of<AuthProvider>(context, listen: false).logout(context);
-        } else {
-          // Handle other cases based on the code and message
-          // For example, display an error message
-          // customToast(context: context, msg: message, type: 0);
-        }
-      } else {
-        // Handle non-200 status code, display error message if needed
-        // customToast(context: context, msg: 'Failed to load subscription details', type: 0);
-      }
+      //     // Return the subscription details
+      //     return {
+      //       'order_id': orderId,
+      //       'secret_key': secretKey,
+      //       'amount': amount,
+      //       'currency': currency,
+      //       'environment': environment,
+      //       'merchant_name': merchantName,
+      //     };
+      //   } else if (code == 401) {
+      //     Provider.of<AuthProvider>(context, listen: false).logout(context);
+      //   } else {
+      //     customToast(context: context, msg: message, type: 0);
+      //   }
+      // } else {
+      //   customToast(
+      //     context: context,
+      //     msg: 'Failed to load subscription details',
+      //     type: 0,
+      //   );
+      // }
     } catch (e) {
-      // Handle exceptions, display error message if needed
-      // customToast(context: context, msg: 'Error: $e', type: 0);
-    } finally {
-      // Notify listeners to indicate that the state change is complete
-      Provider.of<PlanProvider>(context, listen: false).notifyListeners();
+      customToast(context: context, msg: 'Error: $e', type: 0);
     }
+
+    // Dismiss the loader dialog
+    navPop(context: context);
+
+    // Notify listeners
+    notifyListeners();
+
+    return null;
   }
 }

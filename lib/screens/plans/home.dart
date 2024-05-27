@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
           customFlow: false,
           // Main params
           merchantDisplayName: 'Test Merchant',
-          paymentIntentClientSecret: data['client_secret'],
+          paymentIntentClientSecret: data!['client_secret'],
           // Customer keys
           customerEphemeralKeySecret: data['ephemeralKey'],
           customerId: data['id'],

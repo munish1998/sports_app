@@ -259,6 +259,7 @@ class _TodayScreenState extends State<TodayScreen> {
               onSelected: (PopUpModel value) {
                 log('Selected Value here:=====>  $value');
                 onSelectLevel(value.value);
+                log('response of level===>>>$value');
                 setState(() {
                   selectedItem = value.value == '0' ? 'Overall' : value.title;
                 });
@@ -787,6 +788,7 @@ class _TodayScreenState extends State<TodayScreen> {
       'level_id': '0',
       type: location,
     };
+    log('response of leaderboard data ===>>>>$data');
     pro.getLeaderboard(context: context, data: data, isHome: false);
   }
 
@@ -800,6 +802,7 @@ class _TodayScreenState extends State<TodayScreen> {
       'city': city != 'City' ? city : '',
       'country': country != 'Country' ? country : '',
     };
+    // log('')
     pro.getLeaderboard(context: context, data: data, isHome: false);
   }
 }

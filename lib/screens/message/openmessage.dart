@@ -1,11 +1,16 @@
 import 'dart:developer';
+import 'dart:io';
+import 'package:camera/camera.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/common/cacheImage.dart';
@@ -14,6 +19,7 @@ import 'package:touchmaster/providers/messageProviders.dart';
 import 'package:touchmaster/providers/userProvider.dart';
 import 'package:touchmaster/utils/color.dart';
 import 'package:touchmaster/utils/constant.dart';
+import 'package:touchmaster/utils/customLoader.dart';
 import '/app_image.dart';
 import '/screens/account/profile.dart';
 import '/utils/size_extension.dart';
@@ -47,6 +53,7 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
   late SharedPreferences? pref;
   String? receiverId1;
   String? senderId;
+  File? _selectedImage;
   _OpenMessageScreenState({required this.receiverId1, required this.senderId});
   String? timeformat(String? datetime) {}
   String? _extractTime(String? datetime) {
@@ -176,7 +183,6 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                           log('message chat===>>>>$pref');
                           bool isSender = message.senderId == senderId;
 
-                          // Inside the ListView.builder itemBuilder method
                           return Align(
                             alignment: isSender
                                 ? Alignment.centerRight
@@ -203,25 +209,32 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Row(
-                                        // Display message and time on the same line
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: [
-                                          SizedBox(height: 4),
-                                          Expanded(
-                                            child: Text(
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              message.message ?? '',
-                                              style: TextStyle(
-                                                color: isSender
-                                                    ? primary
-                                                    : Colors.white,
-                                                fontSize: 14.sp,
-                                                fontWeight: FontWeight.w400,
+                                          if (message.imageUrl != null &&
+                                              message.imageUrl!.isNotEmpty)
+                                            Image.file(
+                                              File(message
+                                                  .imageUrl!), // Display the image
+                                              height: 150,
+                                              width: 150,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          if (message.message != null &&
+                                              message.message!.isNotEmpty)
+                                            Expanded(
+                                              child: Text(
+                                                message.message ?? '',
+                                                style: TextStyle(
+                                                  color: isSender
+                                                      ? primary
+                                                      : Colors.white,
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
                                               ),
                                             ),
-                                          ),
                                           SizedBox(
                                             width: 10,
                                           ),
@@ -284,11 +297,16 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                                     SizedBox(
                                       width: 10.w,
                                     ),
-                                    AppImage(
-                                      "assets/gallery.svg",
-                                      color: const Color(0xffA4A4A4),
-                                      height: 20.h,
-                                      width: 10.w,
+                                    InkWell(
+                                      onTap: () {
+                                        _showBottomSheet(context);
+                                      },
+                                      child: AppImage(
+                                        "assets/gallery.svg",
+                                        color: const Color(0xffA4A4A4),
+                                        height: 20.h,
+                                        width: 10.w,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -362,6 +380,7 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
                                     receiverId: receiverId,
                                     message: textcontroller.text,
                                     datetime: DateTime.now().toString(),
+                                    filename: '',
                                   );
                                   messageprovider.chatList
                                       .insert(0, newMessage);
@@ -400,7 +419,7 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
         ));
   }
 
-  Future<void> onChatAdd({
+  Future<void> onChatAdd1({
     required String receiverId,
     required String message,
     required String senderId,
@@ -416,6 +435,7 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
         'sender_id': actualSenderId,
         'receiver_id': receiverId,
         'message': message,
+        'filename': '' // for sending video and image from gallery and camera
       };
       log('data rsponse ===>>>$data');
       await messageprovider.addChat(context: context, data: data);
@@ -430,5 +450,252 @@ class _OpenMessageScreenState extends State<OpenMessageScreen> {
     } catch (error) {
       log('Error sending message: $error');
     }
+  }
+
+  Future<void> onChatAdd({
+    required String receiverId,
+    required String message,
+    required String senderId,
+    required MessageProvider messageprovider,
+    File? imageFile,
+    File? videoFile,
+  }) async {
+    try {
+      var actualSenderId = pref!.getString(userIdKey) ?? '';
+      if (actualSenderId.isEmpty) {
+        throw Exception('Sender ID is empty');
+      }
+
+      var data = {
+        'sender_id': actualSenderId,
+        'receiver_id': receiverId,
+        'message': message,
+        'filename': imageFile != null
+            ? imageFile.path
+            : (videoFile != null ? videoFile.path : ''),
+      };
+      log('data response ===>>>$data');
+
+      // If sending an image, log the image path
+      if (imageFile != null) {
+        log('Sending image: ${imageFile.path}');
+      }
+
+      await messageprovider.addChat(context: context, data: data);
+
+      // If sending an image, add it to the chat list
+      if (imageFile != null) {
+        var newMessage = MessageModel(
+          senderId: senderId,
+          receiverId: receiverId,
+          message: '',
+          datetime: DateTime.now().toString(),
+          filename: imageFile
+              .path, // Assuming you have imageUrl field in MessageModel
+        );
+        setState(() {
+          messageprovider.chatList.insert(0, newMessage);
+        });
+      }
+
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(seconds: 0),
+        curve: Curves.easeOut,
+      );
+
+      textcontroller.clear();
+    } catch (error) {
+      log('Error sending message: $error');
+    }
+  }
+
+  Future<void> onChatAdd3({
+    required String receiverId,
+    required String message,
+    required String senderId,
+    required MessageProvider messageprovider,
+    File? imageFile,
+    File? videoFile,
+  }) async {
+    try {
+      var actualSenderId = pref!.getString(userIdKey) ?? '';
+      if (actualSenderId.isEmpty) {
+        throw Exception('Sender ID is empty');
+      }
+
+      var data = {
+        'sender_id': actualSenderId,
+        'receiver_id': receiverId,
+        'message': message,
+        'filename': imageFile != null
+            ? imageFile.path
+            : (videoFile != null
+                ? videoFile.path
+                : ''), // Use the file path for image or video
+      };
+      log('data response ===>>>$data');
+
+      await messageprovider.addChat(context: context, data: data);
+
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(seconds: 0),
+        curve: Curves.easeOut,
+      );
+
+      textcontroller.clear();
+    } catch (error) {
+      log('Error sending message: $error');
+    }
+  }
+
+  void checkCameraPermissio(ImageSource imageSource) async {
+    FocusScope.of(context).requestFocus(FocusNode());
+    var status = await Permission.camera.status;
+    log("permissionText--->>>>  $status");
+    Map<Permission, PermissionStatus> statuses =
+        await [Permission.camera, Permission.storage].request();
+    log("status---->>>>  $statuses");
+    if (statuses[Permission.camera] == PermissionStatus.granted ||
+        statuses[Permission.storage] == PermissionStatus.granted) {
+      log("1111");
+      getPicker(imageSource);
+    }
+
+    if (await Permission.camera.request().isGranted) {
+      log("2222");
+
+      getPicker(imageSource);
+    } else if (await Permission.camera.request().isDenied) {
+      log("2222");
+      openAppSettings();
+      //imagePickerOptions();
+    }
+  }
+
+  void permissionServiceCall(ImageSource imageSource) async {
+    if (imageSource == ImageSource.camera) {
+      var cameraStatus = await Permission.camera.request();
+      if (cameraStatus.isGranted) {
+        getPicker(imageSource);
+      } else if (cameraStatus.isDenied) {
+        cameraStatus = await Permission.camera.request();
+      } else if (cameraStatus.isPermanentlyDenied) {
+        openAppSettings();
+      }
+    } else {
+      var storageStatus = await Permission.storage.request();
+      if (storageStatus.isGranted) {
+        getPicker(imageSource);
+      } else if (storageStatus.isDenied) {
+        storageStatus = await Permission.storage.request();
+      } else if (storageStatus.isPermanentlyDenied) {
+        openAppSettings();
+      }
+    }
+  }
+
+  Future<void> getPicker(ImageSource imageSource) async {
+    try {
+      XFile? image = await ImagePicker().pickImage(
+        source: imageSource,
+        maxWidth: 1024,
+        maxHeight: 1024,
+      );
+      if (image != null) {
+        _imageCropper(File(image.path));
+      }
+    } on CameraException catch (e) {
+      customToast(context: context, msg: e.description.toString(), type: 0);
+    }
+  }
+
+  Future<void> _imageCropper(File photo) async {
+    CroppedFile? cropPhoto = await ImageCropper().cropImage(
+      sourcePath: photo.path,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      compressFormat: ImageCompressFormat.png,
+      aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+    );
+    setState(() {
+      if (cropPhoto != null) {
+        _selectedImage = File(cropPhoto.path);
+
+        log('==>>>${_selectedImage!.path}');
+        log('==>>>${_selectedImage!.path.toString().split('/').last.replaceAll('\'', '')}');
+
+        // Send the image message
+        String senderId = widget.receiverId.toString();
+        String receiverId = (senderId == widget.currentuserId)
+            ? widget.senderId.toString()
+            : widget.receiverId.toString();
+        onChatAdd(
+          receiverId: receiverId,
+          message: '',
+          senderId: senderId,
+          messageprovider: Provider.of<MessageProvider>(context, listen: false),
+          imageFile: _selectedImage,
+        );
+      }
+    });
+  }
+
+  Future<void> _imageCropper1(File photo) async {
+    CroppedFile? cropPhoto = await ImageCropper().cropImage(
+        sourcePath: photo.path,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        compressFormat: ImageCompressFormat.png,
+        aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0));
+    setState(() {
+      if (cropPhoto != null) {
+        _selectedImage = File(cropPhoto!.path);
+
+        log('==>>>${_selectedImage!.path}');
+        log('==>>>${_selectedImage!.path.toString().split('/').last.replaceAll('\'', '')}');
+      }
+    });
+  }
+
+  Future<void> _showBottomSheet(BuildContext context) async {
+    showModalBottomSheet(
+      //  backgroundColor: Colors.black,
+      context: context,
+      builder: (context) => Container(
+        // color: Colors.pink, // Set the background color to black
+        child: CupertinoActionSheet(
+          message: Text(
+            'Choose Image',
+            style: TextStyle(
+                color: Colors
+                    .black), // Ensure text color is readable on black background
+          ),
+          actions: [
+            CupertinoActionSheetAction(
+              onPressed: () {
+                getPicker(ImageSource.camera);
+                Navigator.pop(context);
+              },
+              child: Text(
+                'Camera',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+            CupertinoActionSheetAction(
+              onPressed: () {
+                getPicker(ImageSource.gallery);
+                Navigator.pop(context);
+              },
+              child: Text(
+                'Gallery',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -165,6 +165,44 @@ class ChallengeProvider with ChangeNotifier {
     }
   }
 
+  Future<void> reportAdmin(
+      {required BuildContext context,
+      required Map<String, dynamic> data}) async {
+    var url = Uri.parse(Apis.reporttoAdmin);
+
+    try {
+      final response = await ApiClient()
+          .postDataByToken(context: context, url: url, body: data);
+      log('response of update challenge status is =====>>>>>>>>$response');
+      // log('Response--Video------->>>  ${response.body}');
+
+      var result = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        if (result['code'] == 200) {
+          log('report admin status sucessfully updated===>>>$result');
+          notifyListeners();
+        } else if (result['code'] == 401) {
+          Provider.of<AuthProvider>(context, listen: false).logout(context);
+        } else if (result['code'] == 201) {
+          // Handle specific status code if needed
+        } else {
+          // Handle other response codes if needed
+          // customToast(context: context, msg: result['message'], type: 0);
+          notifyListeners();
+        }
+      } else {
+        // Handle other status codes if needed
+        // customToast(context: context, msg: result['message'], type: 0);
+        notifyListeners();
+      }
+    } catch (error) {
+      log('Error updating challenge status: $error');
+      // Handle network errors or other exceptions here
+      throw error;
+    }
+  }
+
   String thumb =
       "https://www.webpristine.com/Touch-master/media/videos/thumbnail/143890017322012024130913.jpg";
   String video =

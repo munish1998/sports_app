@@ -358,7 +358,7 @@ class _EditProfileState extends State<EditProfile> {
     log('RegData------------>>>>$data');
   }
 
-  void checkCameraPermission(ImageSource imageSource) async {
+  void checkCameraPermissio(ImageSource imageSource) async {
     FocusScope.of(context).requestFocus(FocusNode());
     var status = await Permission.camera.status;
     log("permissionText--->>>>  $status");

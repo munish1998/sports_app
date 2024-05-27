@@ -47,6 +47,8 @@ class Apis {
       '${baseUrl}user/upload_personlized_card_image';
   static const String updateChallengeStatus =
       '${baseUrl}/user/update_challenge_status';
+  static const String reporttoAdmin =
+      '${baseUrl}/user/challenge_report_to_admin';
 
   //-----------Video section
 

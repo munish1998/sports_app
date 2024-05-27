@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:touchmaster/model/challengeModel.dart';
+import 'package:touchmaster/screens/challenges/approve.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../app_image.dart';
@@ -175,7 +176,7 @@ class _VideoChRecordingState extends State<VideoChRecording>
                     // _cameraController!.stopImageStream();
                     navPush(
                         context: context,
-                        action: RecordChPreviewScreen(
+                        action: RecordChPreviewScreen1(
                           file: value.path,
                           challengeId: widget.challengeId,
                         ));
@@ -332,7 +333,7 @@ class _VideoChRecordingState extends State<VideoChRecording>
           galleryFile = File(pickedFile.path);
           navPush(
               context: context,
-              action: RecordChPreviewScreen(
+              action: RecordChPreviewScreen1(
                 file: galleryFile!.path,
                 challengeId: widget.challengeId,
               ));

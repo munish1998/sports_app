@@ -39,6 +39,20 @@ class LevelProvider with ChangeNotifier {
         ),
       );
 
+  void initFirstLevel() {
+    if (_levelList.isNotEmpty && _levelList[0].lockstatus == 'locked') {
+      _levelList[0].lockstatus = 'unlocked';
+      notifyListeners();
+    }
+  }
+
+  void initAllLevels() {
+    for (int i = 1; i < _levelList.length; i++) {
+      _levelList[i].lockstatus = 'locked';
+    }
+    notifyListeners();
+  }
+
   Future<void> getLevels(
       {required BuildContext context, required Map data}) async {
     var url = Uri.parse(Apis.levels);
@@ -52,6 +66,9 @@ class LevelProvider with ChangeNotifier {
       if (result['code'] == 200) {
         var list = result['levels'] as List;
         _levelList = list.map((e) => LevelModel.fromJson(e)).toList();
+        if (_levelList.isNotEmpty) {
+          _levelList[0].lockstatus == 'unlocked';
+        }
         for (int i = 0; i < _levelList.length; i++) {
           _listLevel.add(popupMenu(
               PopUpModel(title: _levelList[i].title, value: '${i + 1}')));

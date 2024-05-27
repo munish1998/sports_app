@@ -1,87 +1,31 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import 'dart:developer';
-import 'package:http/http.dart' as http;
 import 'package:touchmaster/app_image.dart';
-import 'package:touchmaster/common/app_colors.dart';
 import 'package:touchmaster/model/planModel.dart';
-import 'package:touchmaster/screens/notifications/notifications.dart';
-import 'package:touchmaster/screens/plans/home.dart';
-import 'package:touchmaster/screens/plans/payment.dart';
+import 'package:touchmaster/providers/planProvider.dart';
 import 'package:touchmaster/service/apiConstant.dart';
 import 'package:touchmaster/utils/color.dart';
-import 'package:touchmaster/utils/commonMethod.dart';
-import 'package:touchmaster/providers/planProvider.dart';
 import 'package:touchmaster/utils/constant.dart';
 import 'package:touchmaster/utils/size_extension.dart';
+import 'package:http/http.dart' as http;
 
-class PlansScreen extends StatefulWidget {
-  PlansScreen({super.key, this.planModel});
+class StripePlan extends StatefulWidget {
+  const StripePlan({super.key});
 
   @override
-  State<PlansScreen> createState() => _PlansScreenState();
-  PlanModel? planModel;
+  State<StripePlan> createState() => _StripePlanState();
 }
 
-class _PlansScreenState extends State<PlansScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
-
-  double height = 0;
-  double width = 0;
-  SharedPreferences? pref;
+class _StripePlanState extends State<StripePlan> {
   int initIndex = 0;
-  String planID = '3';
 
-  @override
-  void initState() {
-    super.initState();
-    initFun();
-  }
-
-  initFun() async {
-    var pro = Provider.of<PlanProvider>(context, listen: false);
-
-    pref = await SharedPreferences.getInstance();
-    final userId = pref!.getString(userIdKey).toString();
-    var data = {'user_id': userId, 'plan_id': '3'};
-    log('userId response===>>>$userId');
-    // log('response planid====---===----${pro.planModel!.id}');
-    pro.buySubscription1(context: context, data: data);
-  }
-
-  bool isPayment = false;
-  Future<void> initPaymentSheet() async {
-    try {
-      final data = await createPaymentIntent1();
-
-      // 2. initialize the payment sheet
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          // Set to true for custom flow
-          customFlow: false,
-          // Main params
-          merchantDisplayName: 'Test Merchant',
-          paymentIntentClientSecret: data!['client_secret'],
-          // Customer keys
-          customerEphemeralKeySecret: data['ephemeralKey'],
-          customerId: data['id'],
-
-          style: ThemeMode.dark,
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-      rethrow;
-    }
-  }
-
-  Future<void> initPayment() async {
+  Future<void> subscribeNow() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     final planID = '3';
 
@@ -103,45 +47,38 @@ class _PlansScreenState extends State<PlansScreen> {
             log('subscription response ====>>>>$subscription');
             log('Payment Intent Secret: $secretKey');
             log('Order ID: $orderID');
-            log('secret key from  from server====>>>>$secretKey');
-            if (secretKey != null && secretKey.startsWith('sk_')) {
-              try {
-                // Initialize the payment sheet
-                await Stripe.instance.initPaymentSheet(
-                  paymentSheetParameters: SetupPaymentSheetParameters(
-                    paymentIntentClientSecret: secretKey,
-                    merchantDisplayName: 'Touch master',
-                    allowsDelayedPaymentMethods: true,
-                    customerEphemeralKeySecret: data['ephemeralKey'],
-                    // paymentIntentClientSecret: data['client_secret'],
-                  ),
-                );
-                await Stripe.instance.presentPaymentSheet();
 
-                // Show success message
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                    "Payment Done",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  backgroundColor: Colors.green,
-                ));
+            try {
+              // Initialize the payment sheet
+              await Stripe.instance.initPaymentSheet(
+                paymentSheetParameters: SetupPaymentSheetParameters(
+                  paymentIntentClientSecret: secretKey,
+                  merchantDisplayName: 'Touch master',
+                  allowsDelayedPaymentMethods: true,
+                  // customFlow: true,
+                  // customerId: data['order_id']
+                  // customerEphemeralKeySecret: data['ephemeralKey'],
+                  // paymentIntentClientSecret: data['client_secret'],
+                ),
+              );
+              await Stripe.instance.presentPaymentSheet();
 
-                setState(() {
-                  isPayment = true;
-                });
-              } catch (e) {
-                log("Payment sheet error: $e");
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error presenting payment sheet: $e')),
-                );
-              }
-            } else {
-              log('Invalid or missing secret key');
+              // Show success message
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                  "Payment Done",
+                  style: TextStyle(color: Colors.white),
+                ),
+                backgroundColor: Colors.green,
+              ));
+
+              setState(() {
+                // isPayment = true;
+              });
+            } catch (e) {
+              log("Payment sheet error: $e");
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(
-                        'Invalid or missing Payment Intent client secret')),
+                SnackBar(content: Text('Error presenting payment sheet: $e')),
               );
             }
           } else {
@@ -166,8 +103,6 @@ class _PlansScreenState extends State<PlansScreen> {
 
   @override
   Widget build(BuildContext context) {
-    height = MediaQuery.of(context).size.height;
-    width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -177,34 +112,6 @@ class _PlansScreenState extends State<PlansScreen> {
           "assets/logo.png",
           height: 30,
         ),
-        // actions: [
-        //   IconButton(
-        //     onPressed: () {
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(
-        //           builder: (context) => NotificationScreen(),
-        //         ),
-        //       );
-        //     },
-        //     icon: badges.Badge(
-        //       badgeStyle: badges.BadgeStyle(
-        //         badgeColor: primaryColor,
-        //       ),
-        //       badgeContent: Text(
-        //         '0',
-        //         style: GoogleFonts.lato(
-        //           color: Colors.black,
-        //           fontSize: 13,
-        //           fontWeight: FontWeight.w700,
-        //         ),
-        //       ),
-        //       child: const AppImage(
-        //         "assets/notification.svg",
-        //       ),
-        //     ),
-        //   )
-        // ],
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: InkWell(
@@ -424,10 +331,7 @@ class _PlansScreenState extends State<PlansScreen> {
               child: Center(
                 child: InkWell(
                   onTap: () {
-                    // Navigator.push(context,
-                    //     MaterialPageRoute(builder: (context) => HomePage()));
-                    // initPayment();
-                    initPaymentSheet();
+                    subscribeNow();
                   },
                   child: Text(
                     "Subscribe Now",

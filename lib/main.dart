@@ -31,7 +31,7 @@ Future<void> main() async {
   Stripe.publishableKey =
       'pk_test_51PDi6gSFgGEQSEVhKwOVEvy2IYigcgCU2F7f9G8VAyRUJcEthde6JVX3hacyJ41CSXMsplp2zOxh7BDIaTyV9Lug00IWWvH3g3';
 //  Stripe.merchantIdentifier = 'any string works';
-  // await Stripe.instance.applySettings();
+  await Stripe.instance.applySettings();
   preferences = await SharedPreferences.getInstance();
   // cameras = await availableCameras();
   WidgetsFlutterBinding.ensureInitialized();
