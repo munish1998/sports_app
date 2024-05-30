@@ -208,9 +208,7 @@ class _RecordChPreviewScreenState extends State<RecordChPreviewScreen> {
                 // ),
                 ),
             child: Row(
-              mainAxisAlignment: isSaved
-                  ? MainAxisAlignment.center
-                  : MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 InkWell(
                   onTap: () {
@@ -220,8 +218,6 @@ class _RecordChPreviewScreenState extends State<RecordChPreviewScreen> {
                         MaterialPageRoute(
                             builder: (context) => ChallengeScreen()));
                   },
-
-                  // onTap: onShare,
                   child: Text(
                     "Send",
                     style: GoogleFonts.lato(
@@ -236,6 +232,7 @@ class _RecordChPreviewScreenState extends State<RecordChPreviewScreen> {
           ),
         ),
       );
+
   Future<void> onPending(
       String challengeId, String status, String video) async {
     var pro = Provider.of<ChallengeProvider>(context, listen: false);
@@ -361,7 +358,7 @@ class _RecordChPreviewScreenState extends State<RecordChPreviewScreen> {
     //   titleController.text = 'Saved this video';
     // });
     // onUpload('draft');
-    saveVideo();
+    // saveVideo();
   }
 
   Widget get bodyUpload =>
@@ -484,20 +481,4 @@ class _RecordChPreviewScreenState extends State<RecordChPreviewScreen> {
       }
     });
   }
-
-  // Future<void> onPending(
-  //   String challengeid,
-  //   String status,
-  // ) async {
-  //   var pro = Provider.of<ChallengeProvider>(context, listen: false);
-  //   var data = {
-  //     'user_id': preferences!.getString(userIdKey).toString() ?? '',
-  //     'challenge_id': widget.challengeId,
-  //     'status': attempt,
-  //   };
-  //   log('status challenge show details=======>>>>>>>>$status');
-  //   pro.updateChallengeStatus(context: context, data: data).then((value) {});
-  //   log('onpending response data======>>>>>>> $data');
-  //   customToast(context: context, msg: 'challenge has been sent', type: 1);
-  // }
 }

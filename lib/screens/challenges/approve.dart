@@ -208,19 +208,6 @@ class _RecordChPreviewScreen1State extends State<RecordChPreviewScreen1> {
                   ? MainAxisAlignment.center
                   : MainAxisAlignment.spaceEvenly,
               children: [
-                (!isSaved)
-                    ? InkWell(
-                        onTap: onSave,
-                        child: Text(
-                          "Save",
-                          style: GoogleFonts.lato(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      )
-                    : SizedBox(width: 0),
                 (isSaved)
                     ? SizedBox(width: 0)
                     : VerticalDivider(
@@ -305,7 +292,7 @@ class _RecordChPreviewScreen1State extends State<RecordChPreviewScreen1> {
   }
 
   Future<void> onSave() async {
-    await saveVideoAndThumbnail();
+    // await saveVideoAndThumbnail();
   }
 
   Widget get bodyUpload => Consumer<VideoProvider>(
@@ -409,7 +396,7 @@ class _RecordChPreviewScreen1State extends State<RecordChPreviewScreen1> {
       )
           .then((value) {
         if (pro.isUpload) {
-          commonAlert(context, "Exercise has been successfully uploaded");
+          // commonAlert(context, "Exercise has been successfully uploaded");
           var exPro = Provider.of<LevelProvider>(context, listen: false);
           var exData = {
             'user_id': pref.getString(userIdKey).toString(),
@@ -433,7 +420,7 @@ class _RecordChPreviewScreen1State extends State<RecordChPreviewScreen1> {
 
   Future<void> saveVideoAndThumbnail() async {
     await saveVideo();
-    await saveThumbnail();
+    // await saveThumbnail();
   }
 
   Future<void> saveVideo() async {

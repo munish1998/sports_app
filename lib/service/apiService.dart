@@ -141,7 +141,8 @@ class ApiClient {
   Future<http.Response> postDataByToken(
       {required BuildContext context,
       required Uri url,
-      required Map body}) async {
+      required Map body,
+      File? imageFile}) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var header = {

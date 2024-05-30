@@ -180,17 +180,18 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   //   style: TextStyle(color: Colors.white),
                   // ),
                   Text(
-                    (item.status == 'pending' &&
-                            item.senderUserId == widget.userId)
-                        ? 'Challenge send by ${item.senderName}'
+                    (item.status == 'pending' && item.action == 'sent')
+                        ? 'Challenge send to ${item.reciverName}'
                         : (item.status == 'attempt' && item.action == 'sent')
-                            ? 'Challenge attempted '
+                            ? 'Challenge attempt by ${item.reciverName}'
                             : (item.status == 'approve')
                                 ? 'Challenge approved by ${item.senderName}'
-                                : (item.status == 'pending')
-                                    ? 'challenge send by ${item.senderName}'
-                                    : (item.status == 'attempt')
-                                        ? 'challenge attempt'
+                                : (item.status == 'pending' &&
+                                        item.action == 'sent')
+                                    ? 'challenge sen by ${item.reciverName}'
+                                    : (item.status == 'attempt' &&
+                                            item.action == 'sent')
+                                        ? 'challenge attempt by ${item.reciverName}'
                                         : (item.status == 'decline' &&
                                                 item.action == 'sent')
                                             ? ' declined your challenge'
@@ -732,7 +733,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                                       child: Align(
                                         alignment: Alignment.center,
                                         child: Text(
-                                          '${_vController!.value.duration.abs()}',
+                                          '${_vController!.value.duration.inMinutes})}',
                                           style: TextStyle(
                                               color: white, fontSize: 25),
                                         ),
@@ -811,7 +812,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                                         InkWell(
                                           onTap: () {
                                             approve(challengeId, 'approve');
-                                            Navigator.push(
+                                            Navigator.pushReplacement(
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>

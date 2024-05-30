@@ -80,7 +80,6 @@ class ChallengeModel {
       this.senderName,
       this.senderUserId,
       this.reciverName,
-      this.reciverUserId,
       this.action});
 
   ChallengeModel.fromJson(Map<String, dynamic> json) {
@@ -96,6 +95,7 @@ class ChallengeModel {
     senderName = json['sender_name'];
     senderUserId = json['sender_user_id'];
     action = json['action'];
+    reciverName = json['receiver_name'];
   }
 }
 

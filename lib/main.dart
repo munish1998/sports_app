@@ -5,6 +5,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:touchmaster/screens/notifications/notifications.dart';
 
 import 'providers/allProviders.dart';
 import 'screens/splash/splash.dart';

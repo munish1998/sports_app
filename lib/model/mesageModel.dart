@@ -10,13 +10,22 @@ class MessageModel {
   String? imageUrl;
   String? datetime;
 
-  MessageModel(
-      {this.id,
-      this.senderId,
-      this.receiverId,
-      this.message,
-      this.datetime,
-      required String filename});
+  MessageModel({
+    this.id,
+    this.senderId,
+    this.senderName,
+    this.senderPicture,
+    this.receiverId,
+    this.receiverName,
+    this.receiverPicture,
+    this.message,
+    this.imageUrl,
+    this.datetime,
+    required String filename, // Corrected parameter
+  }) {
+    // Assign the filename to the imageUrl property
+    this.imageUrl = filename;
+  }
 
   MessageModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

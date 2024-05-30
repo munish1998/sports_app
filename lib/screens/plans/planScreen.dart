@@ -54,32 +54,32 @@ class _PlansScreenState extends State<PlansScreen> {
   }
 
   bool isPayment = false;
-  Future<void> initPaymentSheet() async {
-    try {
-      final data = await createPaymentIntent1();
+  // Future<void> initPaymentSheet() async {
+  //   try {
+  //     final data = await createPaymentIntent1();
 
-      // 2. initialize the payment sheet
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          // Set to true for custom flow
-          customFlow: false,
-          // Main params
-          merchantDisplayName: 'Test Merchant',
-          paymentIntentClientSecret: data!['client_secret'],
-          // Customer keys
-          customerEphemeralKeySecret: data['ephemeralKey'],
-          customerId: data['id'],
+  //     // 2. initialize the payment sheet
+  //     await Stripe.instance.initPaymentSheet(
+  //       paymentSheetParameters: SetupPaymentSheetParameters(
+  //         // Set to true for custom flow
+  //         customFlow: false,
+  //         // Main params
+  //         merchantDisplayName: 'Test Merchant',
+  //         paymentIntentClientSecret: data!['client_secret'],
+  //         // Customer keys
+  //         customerEphemeralKeySecret: data['ephemeralKey'],
+  //         customerId: data['id'],
 
-          style: ThemeMode.dark,
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-      rethrow;
-    }
-  }
+  //         style: ThemeMode.dark,
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error: $e')),
+  //     );
+  //     rethrow;
+  //   }
+  // }
 
   Future<void> initPayment() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -99,6 +99,8 @@ class _PlansScreenState extends State<PlansScreen> {
           if (data != null && data['subscription'] != null) {
             final subscription = data['subscription'];
             final secretKey = subscription['secret_key'];
+            final amount = subscription["amount"];
+            final currency = subscription["currency"];
             final orderID = subscription['order_id'];
             log('subscription response ====>>>>$subscription');
             log('Payment Intent Secret: $secretKey');
@@ -106,13 +108,21 @@ class _PlansScreenState extends State<PlansScreen> {
             log('secret key from  from server====>>>>$secretKey');
             if (secretKey != null && secretKey.startsWith('sk_')) {
               try {
+                final paymentdata = await createPaymentIntent(
+                  secretKey: secretKey,
+                  // Caclulate From Your Side
+                  amount: (int.parse(amount) * 100).toString(),
+                  currency: currency,
+                );
+
                 // Initialize the payment sheet
                 await Stripe.instance.initPaymentSheet(
                   paymentSheetParameters: SetupPaymentSheetParameters(
-                    paymentIntentClientSecret: secretKey,
+                    paymentIntentClientSecret: paymentdata!["client_secret"],
+
                     merchantDisplayName: 'Touch master',
                     allowsDelayedPaymentMethods: true,
-                    customerEphemeralKeySecret: data['ephemeralKey'],
+                    customerEphemeralKeySecret: paymentdata['ephemeralKey'],
                     // paymentIntentClientSecret: data['client_secret'],
                   ),
                 );
