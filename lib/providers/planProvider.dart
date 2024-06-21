@@ -119,8 +119,8 @@ class PlanProvider with ChangeNotifier {
     var url = Uri.parse(Apis.buySubscription);
 
     notifyListeners();
-    showLoaderDialog(context, 'Please wait...');
-
+    // showLoaderDialog(context, 'Please wait...');
+    try {} catch (e) {}
     try {
       final response = await ApiClient().postDataByToken(
         context: context,
@@ -172,9 +172,10 @@ class PlanProvider with ChangeNotifier {
     }
 
     // Dismiss the loader dialog
+    // navPop(context: context);
     navPop(context: context);
-
     // Notify listeners
+    // notifyListeners();
     notifyListeners();
 
     return null;

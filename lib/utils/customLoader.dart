@@ -19,7 +19,7 @@ class _StaggeredDotsWaveState extends State<StaggeredDotsWave>
   late AnimationController _offsetController;
 
   double size = 35;
-  Color color = primary;
+  Color color = Colors.white;
 
   @override
   void initState() {
@@ -274,6 +274,15 @@ void customToast(
       primaryColor: (type == 0) ? red : primaryColor,
       description: Text(msg),
     ).show(context);
+void commomtoast({required String msg, required Color color}) {
+  Fluttertoast.showToast(
+      msg: msg,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: color,
+      toastLength: Toast.LENGTH_SHORT,
+      textColor: Colors.white,
+      fontSize: 16);
+}
 
 void commonToast({required String msg, required Color color}) {
   Fluttertoast.showToast(

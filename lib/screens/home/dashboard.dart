@@ -144,6 +144,43 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
+  Widget get bottomNaav => Container(
+    color: Colors.pink,
+    child: BottomNavigationBar(
+      items: [
+        BottomNavigationBarItem(
+          icon: Padding(padding: EdgeInsets.only(bottom: 5),
+          child: AppImage('assets/home.svg',height: 27,width: 27,color: currentPage==0?Colors.green:Colors.black,),
+          ),
+          label: 'home'
+        ),
+        BottomNavigationBarItem(
+          icon: Padding(padding: EdgeInsets.only(bottom: 5),
+          child:AppImage('assets/home.svg',height: 27,width: 27,color: currentPage==1?Colors.brown:Colors.yellow,),
+           ),
+           label: 'leaderboard'
+        ),
+        BottomNavigationBarItem(
+          icon: Padding(padding: EdgeInsets.only(bottom: 5),
+          child: AppImage('assets/leaderboard.svg',height: 27,width: 27,color: currentPage==2?Colors.blue:Colors.red,),
+          ),
+          label: 'profile'
+        ),
+        BottomNavigationBarItem(
+          icon: Padding(padding: EdgeInsets.only(bottom: 5),
+          child: AppImage('assets/task.svg',height: 27,width: 27,color: currentPage==3?Colors.yellow:Colors.blueGrey,),),
+          label: 'task'
+        )
+      ],
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: Colors.green,
+      unselectedFontSize: 0,
+      selectedFontSize: 22,
+      
+    )
+      
+    
+  );
   Widget get bottomNav => Container(
         color: Colors.black,
         child: BottomNavigationBar(

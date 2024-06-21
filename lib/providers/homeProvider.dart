@@ -115,6 +115,20 @@ class HomeProvider with ChangeNotifier {
     }
   }
 
+  Future<void> notification(
+      {required BuildContext context, required Map data}) async {
+    var url = Uri.parse(Apis.getNotification);
+    final response = await ApiClient()
+        .postDataByToken(context: context, url: url, body: data);
+    var result = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      if (result['code'] == 200) {
+        //  var list = result['notificaions'] as list;
+        // _notifyList= list.m
+      }
+    }
+  }
+
   Future<void> getNotification(
       {required BuildContext context, required Map data}) async {
     var url = Uri.parse(Apis.getNotification);

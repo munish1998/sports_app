@@ -71,6 +71,11 @@ dependencies:
   flutter_stripe: ^10.1.1
   intl: ^0.18.1
   emoji_picker_flutter: ^2.2.0
+  flutter_sound_record: ^3.3.2
+  flutter_sound: ^9.2.13
+  cron: ^0.6.0
+  audioplayers: ^6.0.0
+  record: ^4.1.0
 
 
 dependency_overrides:

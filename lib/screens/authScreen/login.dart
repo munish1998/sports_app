@@ -276,6 +276,14 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Future<void> login() async {
+    var pro = Provider.of<AuthProvider>(context, listen: false);
+    var data = {};
+    if (pro.emailController.text.isEmpty) {
+      customToast(context: context, msg: 'email id is requirred', type: 0);
+    }
+  }
+
   Future<void> onLogin() async {
     var pro = Provider.of<AuthProvider>(context, listen: false);
     var data = {};
@@ -295,6 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
         'location': pro.address,
         'fcm_id': pro.token,
       };
+
       pro.login(context: context, data: data).then((value) {
         if (pro.isLogin) {
           log('Login Here-------------------- $data');

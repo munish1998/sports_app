@@ -36,8 +36,9 @@ class ConnectionsScreen1 extends StatefulWidget {
 class _ConnectionsScreen1State extends State<ConnectionsScreen1> {
   TextEditingController searchController = TextEditingController();
   List<UsersModel> filteredUsers = [];
-
-  SharedPreferences? pref;
+  late SharedPreferences pref;
+  late String rceiverId = '';
+  // SharedPreferences? pref;
   late String currentuserID = pref!.getString(userIdKey).toString();
   @override
   void initState() {
@@ -59,8 +60,9 @@ class _ConnectionsScreen1State extends State<ConnectionsScreen1> {
 
   _initFun() async {
     pref = await SharedPreferences.getInstance();
-    var currentuserID = pref!.getString(userIdKey) ?? '';
-    var data = {'user_id': currentuserID};
+    rceiverId = pref!.getString(userIdKey) ?? '';
+    // var currentuserID = pref!.getString(userIdKey) ?? '';
+    var data = {'user_id': rceiverId};
     log('UserFound---------->>>> $data');
     log('response of currentuserID==>>>$currentuserID');
     await Provider.of<UsersProvider>(context, listen: false)
@@ -397,25 +399,48 @@ class _ConnectionsScreen1State extends State<ConnectionsScreen1> {
                                 width: 10), // Add some space between buttons
                             InkWell(
                               onTap: () {
-                                String senderId;
-                                String receiverId;
+                                // Initialize senderId as the current user ID
+                                String senderId = currentuserID;
 
+                                // Check if the item user ID is the same as the current user ID
+                                // If they are the same, assign widget.receiverId to receiverId
+                                // Otherwise, assign item.userId to receiverId
+                                String receiverId;
                                 if (item.userId == currentuserID) {
-                                  senderId = currentuserID;
-                                  receiverId = item.userId;
+                                  // This should not normally happen in a proper chat scenario
+                                  log('Warning: sender and receiver IDs are the same');
+                                  receiverId = widget.receiverId.toString();
                                 } else {
-                                  senderId = widget.receiverId.toString();
                                   receiverId = item.userId;
                                 }
+
+                                // Log the values to verify correctness
+                                log('response of currentuserID===>>>$currentuserID');
                                 log('response of senderID===>>>$senderId');
                                 log('response of receiverID===>>>$receiverId');
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => OpenMessageScreen(
-                                      receiverId: receiverId,
-                                      senderId: senderId,
-                                    ),
+
+                                // Navigate to the OpenMessageScreen with the correct IDs
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => OpenMessageScreen(
+                                //       // receiverName: '',
+                                //       receiverId: receiverId,
+                                //       senderId: senderId,
+                                //     ),
+                                //   ),
+                                // );
+                                // log(message)
+                                navPush(
+                                  context: context,
+                                  action: OpenMessageScreen(
+                                    receiverId: rceiverId == item.userId
+                                        ? item.userId
+                                        : rceiverId,
+                                    senderId: item.userId!,
+                                    currentuserId: rceiverId,
+                                    senderName: item.name.toString(),
+                                    receiverName: '',
                                   ),
                                 );
                               },

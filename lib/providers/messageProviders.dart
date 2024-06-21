@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/files.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
-import 'package:http/src/multipart_request.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/model/inboxMessageModel.dart';
@@ -43,7 +41,7 @@ class MessageProvider with ChangeNotifier {
         url: url,
         body: data,
       );
-      log('respone of chatlist api=======>>>>>>>>${response.body}');
+      log('response of chat list api=======>>>>>>>>${response.body}');
       if (response.statusCode == 200) {
         var result = jsonDecode(response.body);
         if (result['code'] == 200) {
@@ -114,6 +112,10 @@ class MessageProvider with ChangeNotifier {
         if (result['code'] == 200) {
           // Call getChatInbox to update the inbox messages list
           await getChatInbox(context: context, data: {'user_id': userId});
+          // Call getChatHistory to update the chat messages list
+          await getChatHistory(
+              context: context,
+              data: {'user_id': userId, 'chat_user_id': data['receiver_id']});
           // Notify listeners to update the UI
           notifyListeners();
         } else if (result['code'] == 401) {
@@ -137,7 +139,9 @@ class MessageProvider with ChangeNotifier {
   Future<void> editProfileBG(
       {required BuildContext context,
       required Map<String, dynamic> data,
-      required String filePath}) async {
+      required String filePath,
+      required String msg,
+      required String receiverID}) async {
     var url = Uri.parse(Apis.addChat);
     // showLoaderDialog(context, 'Please wait...');
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -162,14 +166,15 @@ class MessageProvider with ChangeNotifier {
 
       request.fields.addAll({
         'sender_id': pref.getString(userIdKey).toString(),
-        'receiver_id': 'TM-0002',
-        'message': ""
+        'receiver_id': receiverID,
+        'message': msg,
+        'filename': filePath
       });
 
       var response = await request.send();
       var responseData = await response.stream.toBytes();
       var responseString = String.fromCharCodes(responseData);
-
+      log('response of data fetch by cat screen===>>>${response.contentLength}');
       log("Requests--->$request");
       log("PostResponse----> $responseString");
       log("StatusCodePost---->${response.statusCode}");
@@ -200,4 +205,7 @@ class MessageProvider with ChangeNotifier {
       // navPop(context: context);
     }
   }
+
+  sendMessage(
+      {required BuildContext context, required Map<String, Object?> data}) {}
 }

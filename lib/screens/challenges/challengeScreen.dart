@@ -180,7 +180,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   //   style: TextStyle(color: Colors.white),
                   // ),
                   Text(
-                    (item.status == 'pending' && item.action == 'sent')
+                    (item.status == 'pending' && item.action == 'receive')
                         ? 'Challenge send to ${item.reciverName}'
                         : (item.status == 'attempt' && item.action == 'sent')
                             ? 'Challenge attempt by ${item.reciverName}'
@@ -197,7 +197,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                                             ? ' declined your challenge'
                                             : (item.status == 'decline' &&
                                                     item.action == 'receive')
-                                                ? '${item.senderName} declned your challenge'
+                                                ? '${item.senderName} declined your challenge'
                                                 : (item.status == 'cancel' &&
                                                         item.action == 'sent')
                                                     ? '${item.senderName} cancel your challenge'

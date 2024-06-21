@@ -177,6 +177,7 @@ class AuthProvider with ChangeNotifier {
     if (response.statusCode == 200) {
       if (result['code'] == 200) {
         pref.setBool(isUserLoginKey, true);
+        // pref.setBool(isUserLoginKey, true);
         pref.setString(accessTokenKey, result['access_token']);
         pref.setString(userIdKey, result['user_id']);
         _isVerify = true;

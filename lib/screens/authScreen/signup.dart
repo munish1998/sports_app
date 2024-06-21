@@ -1,8 +1,10 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -306,6 +308,60 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
+
+  Widget textfields(
+          {required BuildContext context,
+          required TextEditingController controller,
+          required String hint,
+          required IconData icon,
+          required bool isPas,
+          required int index}) =>
+      Container(
+        child: TextFormField(
+          keyboardType: (index == 0)
+              ? TextInputType.name
+              : (index == 1)
+                  ? TextInputType.emailAddress
+                  : TextInputType.text,
+          obscureText: !isPas,
+          textCapitalization: (index == 0 || index == 3 || index == 5)
+              ? TextCapitalization.words
+              : TextCapitalization.none,
+          controller: controller,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          style: TextStyle(),
+          inputFormatters: [
+            if (index == 0) LengthLimitingTextInputFormatter(50),
+            if (index == 1) LengthLimitingTextInputFormatter(50),
+            if (index == 3) LengthLimitingTextInputFormatter(50)
+          ],
+          decoration: InputDecoration(
+              suffixIcon: InkWell(
+                onTap: () {
+                  if (index == 6) {
+                    setState(() {
+                      isPas = !isPas;
+                    });
+                  } else if (index == 7) {
+                    setState(() {
+                      isCPass = !isCPass;
+                    });
+                  }
+                },
+                child: Icon(
+                  icon,
+                  color: Colors.white.withOpacity(0.5),
+                  size: 20,
+                ),
+              ),
+              hintText: hint,
+              hintStyle: TextStyle(),
+              isDense: true,
+              border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(10))),
+        ),
+      );
 
   Widget textField({
     required BuildContext context,

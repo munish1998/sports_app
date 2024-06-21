@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:touchmaster/model/personalizeModel.dart';
 import 'package:touchmaster/model/rewardModel.dart';
@@ -202,6 +203,34 @@ class ProfileProvider with ChangeNotifier {
       // TODO
 
       navPop(context: context);
+    }
+  }
+
+  Future<void> editiImg(
+      {required BuildContext context,
+      required Map<String, String> data,
+      required filePath}) async {
+    var url = Uri.parse(Apis.updateProfileBG);
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    try {
+      var request = http.MultipartRequest('POST', url);
+      if (filePath.isNotEmpty) {
+        var pic = await http.MultipartFile.fromPath('POST', filePath);
+        request.files.add(pic);
+        request.fields
+            .addAll({'user_id': pref.getString(userIdKey).toString()});
+        var response = await request.send();
+        var responseData = await response.stream.toBytes();
+        var responsestring = String.fromCharCodes(responseData);
+        var result = jsonDecode(responsestring);
+        if (response.statusCode == 200) {
+          if (result['code'] == 200) {
+            customToast(context: context, msg: result['message'], type: 1);
+          }
+        }
+      }
+    } catch (e) {
+      log(e.toString());
     }
   }
 

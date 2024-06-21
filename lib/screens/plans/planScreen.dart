@@ -83,7 +83,7 @@ class _PlansScreenState extends State<PlansScreen> {
 
   Future<void> initPayment() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    final planID = '3';
+    String planID = "3";
 
     if (pref != null) {
       final userID = pref.getString(userIdKey).toString();
@@ -109,11 +109,11 @@ class _PlansScreenState extends State<PlansScreen> {
             if (secretKey != null && secretKey.startsWith('sk_')) {
               try {
                 final paymentdata = await createPaymentIntent(
-                  secretKey: secretKey,
-                  // Caclulate From Your Side
-                  amount: (int.parse(amount) * 100).toString(),
-                  currency: currency,
-                );
+                    secretKey: secretKey,
+                    // Caclulate From Your Side
+                    amount: (int.parse(amount) * 50).toString(),
+                    currency: currency,
+                    orderId: orderID);
 
                 // Initialize the payment sheet
                 await Stripe.instance.initPaymentSheet(

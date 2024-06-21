@@ -178,7 +178,7 @@ class _InboxMessageScreenState extends State<InboxMessageScreen> {
                                         ),
                                         // Conditionally show unread count or tick icon
                                         (item.userId != rceiverId &&
-                                                item.unreadCount != null)
+                                                item.unreadCount == null)
                                             ? Container(
                                                 padding:
                                                     const EdgeInsets.all(6),
